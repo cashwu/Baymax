@@ -27,6 +27,12 @@ namespace Baymax
 
             return new JsonResultAssertions<TController>(_actionResult as JsonResult, _controller);
         }
-    }
+        
+        public ViewResultAssertions<TController> ShouldBeViewResult()
+        {
+            _actionResult.Should().BeOfType<ViewResult>();
 
+            return new ViewResultAssertions<TController>(_actionResult as ViewResult, _controller);
+        }
+    }
 }
