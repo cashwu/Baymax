@@ -62,5 +62,14 @@ namespace Baymax
 
             return new EmptyResultAssertions<TController>(_actionResult as EmptyResult, _controller);
         }
+
+        public PartialViewResultAssertions<TController> ShouldBePartialViewResult()
+        {
+            _actionResult.Should().BeOfType<PartialViewResult>();
+
+            return new PartialViewResultAssertions<TController>(_actionResult as PartialViewResult, _controller);
+        }
+
+
     }
 }
