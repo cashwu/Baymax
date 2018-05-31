@@ -48,5 +48,12 @@ namespace Baymax
 
             return new FileContentResultAssertions<TController>(_actionResult as FileContentResult, _controller);
         }
+
+        public FileStreamResultAssertions<TController> ShouldBeFileStreamResult()
+        {
+            _actionResult.Should().BeOfType<FileStreamResult>();
+
+            return new FileStreamResultAssertions<TController>(_actionResult as FileStreamResult, _controller);
+        }
     }
 }
