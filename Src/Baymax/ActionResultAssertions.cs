@@ -70,6 +70,13 @@ namespace Baymax
             return new PartialViewResultAssertions<TController>(_actionResult as PartialViewResult, _controller);
         }
 
+        public RedirectResultAssertions<TController> ShouldBeRedirectResult()
+        {
+            _actionResult.Should().BeOfType<RedirectResult>();
 
+            return new RedirectResultAssertions<TController>(_actionResult as RedirectResult, _controller);
+        }
+
+        
     }
 }
