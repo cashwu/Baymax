@@ -111,5 +111,13 @@ namespace Baymax
             
             return new ChallengeResultAssertions<TController>(_actionResult as ChallengeResult, _controller);
         }
+        
+        public CreatedAtActionResultAssertions<TController> ShouldBeCreatedAtActionResult()
+        {
+            _actionResult.Should().BeOfType<CreatedAtActionResult>();
+            
+            return new CreatedAtActionResultAssertions<TController>(_actionResult as CreatedAtActionResult, _controller);
+        }
+        
     }
 }
