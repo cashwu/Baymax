@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Baymax
 {
@@ -11,6 +12,20 @@ namespace Baymax
         {
             _redirectResult = redirectResult;
             _controller = controller;
+        }
+        
+        public RedirectResultAssertions<TController> WithUrl(string expectedUrl)
+        {
+            _redirectResult.Url.Should().Be(expectedUrl);
+
+            return this;
+        }
+        
+        public RedirectResultAssertions<TController> WithPermanent(bool expectedPermanent)
+        {
+            _redirectResult.Permanent.Should().Be(expectedPermanent);
+
+            return this;
         }
     }
 }
