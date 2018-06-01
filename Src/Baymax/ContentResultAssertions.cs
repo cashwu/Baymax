@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Baymax
 {
@@ -11,6 +12,13 @@ namespace Baymax
         {
             _contentResult = contentResult;
             _controller = controller;
+        }
+
+        public ContentResultAssertions<TController> WithContent(string expectedContent)
+        {
+            _contentResult.Content.Should().Be(expectedContent);
+
+            return this;
         }
     }
 }

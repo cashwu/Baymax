@@ -76,7 +76,5 @@ namespace Baymax
 
             return new RedirectResultAssertions<TController>(_actionResult as RedirectResult, _controller);
         }
-
-        
     }
 }
