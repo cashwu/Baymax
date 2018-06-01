@@ -30,6 +30,13 @@ namespace Baymax
 
             return this;
         }
+        
+        public ViewResultAssertions<TController> WithDefaultViewName()
+        {
+            _viewResult.ViewName.Should().BeEmpty();
+
+            return this;
+        }
 
         public ViewResultAssertions<TController> WithViewBag(string key, object expectedValue)
         {
