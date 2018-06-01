@@ -97,5 +97,12 @@ namespace Baymax
 
             return new RedirectToRouteResultAssertions<TController>(_actionResult as RedirectToRouteResult, _controller);
         }
+        
+        public StatusCodeResultAssertions<TController> ShouldBeStatusCodeResult()
+        {
+            _actionResult.Should().BeOfType<StatusCodeResult>();
+
+            return new StatusCodeResultAssertions<TController>(_actionResult as StatusCodeResult, _controller);
+        }
     }
 }
