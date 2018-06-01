@@ -1,0 +1,46 @@
+﻿using ExpectedObjects;
+using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Baymax
+{
+    public class RedirectToRouteResultAssertions<TController> where TController : Controller
+    {
+        private readonly RedirectToRouteResult _redirectToRouteResult;
+        private readonly TController _controller;
+
+        public RedirectToRouteResultAssertions(RedirectToRouteResult redirectToRouteResult, TController controller)
+        {
+            _redirectToRouteResult = redirectToRouteResult;
+            _controller = controller;
+        }
+        
+        public RedirectToRouteResultAssertions<TController> WithFragment(string expectedFragment)
+        {
+            _redirectToRouteResult.Fragment.Should().Be(expectedFragment);
+
+            return this;
+        }
+        
+        public RedirectToRouteResultAssertions<TController> WithPermanent(bool expectedPermanent)
+        {
+            _redirectToRouteResult.Permanent.Should().Be(expectedPermanent);
+
+            return this;
+        }
+        
+        public RedirectToRouteResultAssertions<TController> WithRouteName(string expectedRouteName)
+        {
+            _redirectToRouteResult.RouteName.Should().Be(expectedRouteName);
+
+            return this;
+        }
+        
+        public RedirectToRouteResultAssertions<TController> WithRouteValue(string key, object expectedValue)
+        {
+            expectedValue.ToExpectedObject().Should().Be(_redirectToRouteResult.RouteValues[key]);
+            
+            return this;
+        }
+    }
+}

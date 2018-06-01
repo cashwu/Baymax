@@ -90,5 +90,12 @@ namespace Baymax
             
            return new LocalRedirectResultAssertions<TController>(_actionResult as LocalRedirectResult, _controller); 
         }
+
+        public RedirectToRouteResultAssertions<TController> ShouldBeRedirectToRouteResult()
+        {
+            _actionResult.Should().BeOfType<RedirectToRouteResult>();
+
+            return new RedirectToRouteResultAssertions<TController>(_actionResult as RedirectToRouteResult, _controller);
+        }
     }
 }
