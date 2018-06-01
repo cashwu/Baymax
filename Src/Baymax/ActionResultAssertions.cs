@@ -76,5 +76,12 @@ namespace Baymax
 
             return new RedirectResultAssertions<TController>(_actionResult as RedirectResult, _controller);
         }
+
+        public ForbidResultAssertions<TController> ShouldBeForbidResult()
+        {
+            _actionResult.Should().BeOfType<ForbidResult>();
+            
+           return new ForbidResultAssertions<TController>(_actionResult as ForbidResult, _controller); 
+        }
     }
 }
