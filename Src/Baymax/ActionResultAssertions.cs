@@ -130,7 +130,7 @@ namespace Baymax
         {
             _actionResult.Should().BeOfType<AcceptedResult>();
             
-            return new AcceptedResultAssertions<TController>(_actionResult as AcceptedResult, _controller);
+            return new AcceptedResultAssertions<TController>(_actionResult as AcceptedResult);
         }
     }
 }

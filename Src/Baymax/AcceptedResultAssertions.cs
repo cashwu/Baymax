@@ -7,12 +7,10 @@ namespace Baymax
     public class AcceptedResultAssertions<TController> where TController : Controller
     {
         private readonly AcceptedResult _acceptedResult;
-        private readonly TController _controller;
 
-        public AcceptedResultAssertions(AcceptedResult acceptedResult, TController controller)
+        public AcceptedResultAssertions(AcceptedResult acceptedResult)
         {
             _acceptedResult = acceptedResult;
-            _controller = controller;
         }
 
         public AcceptedResultAssertions<TController> WithLocation(string expectedLocation)
