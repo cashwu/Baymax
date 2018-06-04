@@ -6,7 +6,7 @@ using Xunit.Sdk;
 
 namespace Baymax.Tests
 {
-    public class AcceptedResultAssertionsTests
+    public class AcceptedResultAssertionsTests : ResultAssertionTestBase
     {
         [Fact]
         public void Result_with_location_assertWithLocation_should_not_throw_exception()
@@ -75,12 +75,5 @@ namespace Baymax.Tests
         {
             return new AcceptedResultAssertions<Controller>(acceptedResult);
         }
-    }
-
-    public class TestModel
-    {
-        public int Id { get; set; }
-
-        public string Name { get; set; }
     }
 }
