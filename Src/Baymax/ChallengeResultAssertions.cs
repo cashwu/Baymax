@@ -5,25 +5,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Baymax
 {
-    public class ChallengeResultAssertions<TController> where TController : Controller
+    public class ChallengeResultAssertions  
     {
         private readonly ChallengeResult _challengeResult;
-        private readonly TController _controller;
 
-        public ChallengeResultAssertions(ChallengeResult challengeResult, TController controller)
+        public ChallengeResultAssertions(ChallengeResult challengeResult)
         {
             _challengeResult = challengeResult;
-            _controller = controller;
         }
         
-        public ChallengeResultAssertions<TController> WithAuthenticationSchemes(List<string> expectedAuthenticationSchemes)
+        public ChallengeResultAssertions WithAuthenticationSchemes(List<string> expectedAuthenticationSchemes)
         {
             expectedAuthenticationSchemes.ToExpectedObject().ShouldEqual(_challengeResult.AuthenticationSchemes);
 
             return this;
         }
         
-        public ChallengeResultAssertions<TController> WithAuthenticationProperties(AuthenticationProperties expectedAuthenticationProperties)
+        public ChallengeResultAssertions WithAuthenticationProperties(AuthenticationProperties expectedAuthenticationProperties)
         {
            expectedAuthenticationProperties.ToExpectedObject().ShouldEqual(_challengeResult.Properties);
             
