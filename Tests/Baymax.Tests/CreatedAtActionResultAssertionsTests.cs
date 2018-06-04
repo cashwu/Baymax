@@ -58,11 +58,11 @@ namespace Baymax.Tests
         public void Result_with_route_value_assertWithRouteValue_should_not_throw_exception()
         {
             var createdAtActionResult =
-                new CreatedAtActionResult(null, null, new RouteValueDictionary {{"key", "value"}}, null);
+                new CreatedAtActionResult(null, null, new RouteValueDictionary {{"key", new TestModel {Id = 1}}}, null);
 
             var assertions = GivenCreatedAtActionResultAssertions(createdAtActionResult);
 
-            assertions = assertions.WithRouteValue("key", "value");
+            assertions = assertions.WithRouteValue("key", new TestModel {Id = 1});
 
             assertions.Should().NotBeNull();
         }
@@ -71,11 +71,11 @@ namespace Baymax.Tests
         public void Result_have_wrong_route_value_assertWithRouteValue_should_throw_exception()
         {
             var createdAtActionResult =
-                new CreatedAtActionResult(null, null, new RouteValueDictionary {{"key", "wrong"}}, null);
+                new CreatedAtActionResult(null, null, new RouteValueDictionary {{"key", new TestModel {Id = 0}}}, null);
 
             var assertions = GivenCreatedAtActionResultAssertions(createdAtActionResult);
 
-            Assert.Throws<XunitException>(() => assertions.WithRouteValue("key", "value"));
+            Assert.Throws<ComparisonException>(() => assertions.WithRouteValue("key", new TestModel {Id = 1}));
         }
 
         [Fact]

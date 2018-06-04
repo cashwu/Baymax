@@ -27,9 +27,9 @@ namespace Baymax
             return this;
         }
 
-        public CreatedAtActionResultAssertions WithRouteValue(string key, string expectedValue)
+        public CreatedAtActionResultAssertions WithRouteValue(string key, object expectedValue)
         {
-            _createdAtActionResult.RouteValues[key].Should().Be(expectedValue);
+            expectedValue.ToExpectedObject().ShouldMatch(_createdAtActionResult.RouteValues[key]);
 
             return this;
         }
