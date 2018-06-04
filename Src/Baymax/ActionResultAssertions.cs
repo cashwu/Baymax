@@ -35,11 +35,11 @@ namespace Baymax
             return new ViewResultAssertions<TController>(_actionResult as ViewResult, _controller);
         }
 
-        public ContentResultAssertions<TController> ShouldBeContentResult()
+        public ContentResultAssertions ShouldBeContentResult()
         {
             _actionResult.Should().BeOfType<ContentResult>();
 
-            return new ContentResultAssertions<TController>(_actionResult as ContentResult, _controller);
+            return new ContentResultAssertions(_actionResult as ContentResult);
         }
 
         public FileContentResultAssertions<TController> ShouldBeFileContentResult()

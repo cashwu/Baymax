@@ -3,18 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Baymax
 {
-    public class ContentResultAssertions<TController> where TController : Controller
+    public class ContentResultAssertions
     {
         private readonly ContentResult _contentResult;
-        private readonly TController _controller;
 
-        public ContentResultAssertions(ContentResult contentResult, TController controller)
+        public ContentResultAssertions(ContentResult contentResult)
         {
             _contentResult = contentResult;
-            _controller = controller;
         }
 
-        public ContentResultAssertions<TController> WithContent(string expectedContent)
+        public ContentResultAssertions WithContent(string expectedContent)
         {
             _contentResult.Content.Should().Be(expectedContent);
 
