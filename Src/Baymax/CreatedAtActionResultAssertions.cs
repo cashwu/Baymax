@@ -4,41 +4,39 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Baymax
 {
-    public class CreatedAtActionResultAssertions<TController> where TController : Controller
+    public class CreatedAtActionResultAssertions
     {
         private readonly CreatedAtActionResult _createdAtActionResult;
-        private readonly TController _controller;
 
-        public CreatedAtActionResultAssertions(CreatedAtActionResult createdAtActionResult, TController controller)
+        public CreatedAtActionResultAssertions(CreatedAtActionResult createdAtActionResult)
         {
             _createdAtActionResult = createdAtActionResult;
-            _controller = controller;
         }
 
-        public CreatedAtActionResultAssertions<TController> WithActionName(string expectedActionName)
+        public CreatedAtActionResultAssertions WithActionName(string expectedActionName)
         {
             _createdAtActionResult.ActionName.Should().Be(expectedActionName);
 
             return this;
         }
-        
-        public CreatedAtActionResultAssertions<TController> WithControllerName(string expectedControllerName)
+
+        public CreatedAtActionResultAssertions WithControllerName(string expectedControllerName)
         {
             _createdAtActionResult.ControllerName.Should().Be(expectedControllerName);
 
             return this;
         }
-        
-        public CreatedAtActionResultAssertions<TController> WithRouteValue(string key, object expectedValue)
+
+        public CreatedAtActionResultAssertions WithRouteValue(string key, string expectedValue)
         {
-            expectedValue.ToExpectedObject().Should().Be(_createdAtActionResult.RouteValues[key]);
+            _createdAtActionResult.RouteValues[key].Should().Be(expectedValue);
 
             return this;
         }
-        
-        public CreatedAtActionResultAssertions<TController> WithValue(object expectedValue)
+
+        public CreatedAtActionResultAssertions WithValue(object expectedValue)
         {
-            expectedValue.ToExpectedObject().Should().Be(_createdAtActionResult.Value);
+            expectedValue.ToExpectedObject().ShouldEqual(_createdAtActionResult.Value);
 
             return this;
         }

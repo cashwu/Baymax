@@ -10,7 +10,7 @@ namespace Baymax.Tests
         [Fact]
         public void Result_with_content_assertWithContent_should_not_throw_exception()
         {
-            var contentResult = new ContentResult()
+            var contentResult = new ContentResult
             {
                 Content = "Test"
             };
