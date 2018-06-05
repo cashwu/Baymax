@@ -5,25 +5,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Baymax
 {
-    public class ForbidResultAssertions<TController> where TController : Controller
+    public class ForbidResultAssertions
     {
         private readonly ForbidResult _forbidResult;
-        private readonly TController _controller;
 
-        public ForbidResultAssertions(ForbidResult forbidResult, TController controller)
+        public ForbidResultAssertions(ForbidResult forbidResult)
         {
             _forbidResult = forbidResult;
-            _controller = controller;
         }
         
-        public ForbidResultAssertions<TController> WithAuthenticationSchemes(List<string> expectedAuthenticationSchemes)
+        public ForbidResultAssertions WithAuthenticationSchemes(List<string> expectedAuthenticationSchemes)
         {
             expectedAuthenticationSchemes.ToExpectedObject().ShouldEqual(_forbidResult.AuthenticationSchemes);
 
             return this;
         }
         
-        public ForbidResultAssertions<TController> WithAuthenticationProperties(AuthenticationProperties expectedAuthenticationProperties)
+        public ForbidResultAssertions WithAuthenticationProperties(AuthenticationProperties expectedAuthenticationProperties)
         {
            expectedAuthenticationProperties.ToExpectedObject().ShouldEqual(_forbidResult.Properties);
 
