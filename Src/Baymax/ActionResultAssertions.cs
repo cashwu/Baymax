@@ -56,11 +56,9 @@ namespace Baymax
             return new FileStreamResultAssertions<TController>(_actionResult as FileStreamResult, _controller);
         }
 
-        public EmptyResultAssertions<TController> ShouldBeEmptyResult()
+        public void ShouldBeEmptyResult()
         {
             _actionResult.Should().BeOfType<EmptyResult>();
-
-            return new EmptyResultAssertions<TController>(_actionResult as EmptyResult, _controller);
         }
 
         public PartialViewResultAssertions<TController> ShouldBePartialViewResult()
