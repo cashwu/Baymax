@@ -4,18 +4,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Baymax
 {
-    public class JsonResultAssertions<TController> where TController : Controller
+    public class JsonResultAssertions
     {
         private readonly JsonResult _jsonResult;
-        private readonly TController _controller;
 
-        public JsonResultAssertions(JsonResult jsonResult, TController controller)
+        public JsonResultAssertions(JsonResult jsonResult)
         {
-            this._jsonResult = jsonResult;
-            _controller = controller;
+            _jsonResult = jsonResult;
         }
 
-        public JsonResultAssertions<TController> WithData<TModel>(TModel data) 
+        public JsonResultAssertions WithData<TModel>(TModel data) 
             where TModel : class 
         {
             _jsonResult.Value.Should().BeOfType<TModel>();
@@ -24,7 +22,7 @@ namespace Baymax
             return this;
         }
 
-        public JsonResultAssertions<TController> WithAnonymousData(object data)
+        public JsonResultAssertions WithAnonymousData(object data)
         {
             _jsonResult.Value.ToObjectString().Should().Be(data.ToObjectString());
 

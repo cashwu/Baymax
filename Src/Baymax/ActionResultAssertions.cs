@@ -21,11 +21,11 @@ namespace Baymax
             return new RedirectToActionResultAssertions<TController>(_actionResult as RedirectToActionResult, _controller);
         }
 
-        public JsonResultAssertions<TController> ShouldBeJsonResult()
+        public JsonResultAssertions ShouldBeJsonResult()
         {
             _actionResult.Should().BeOfType<JsonResult>();
 
-            return new JsonResultAssertions<TController>(_actionResult as JsonResult, _controller);
+            return new JsonResultAssertions(_actionResult as JsonResult);
         }
         
         public ViewResultAssertions<TController> ShouldBeViewResult()
