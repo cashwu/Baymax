@@ -119,11 +119,11 @@ namespace Baymax
             return new CreatedAtActionResultAssertions(_actionResult as CreatedAtActionResult);
         }
         
-        public CreatedAtRouteResultAssertions<TController> ShouldCreatedAtRouteResult()
+        public CreatedAtRouteResultAssertions ShouldCreatedAtRouteResult()
         {
             _actionResult.Should().BeOfType<CreatedAtRouteResult>();
             
-            return new CreatedAtRouteResultAssertions<TController>(_actionResult as CreatedAtRouteResult, _controller);
+            return new CreatedAtRouteResultAssertions(_actionResult as CreatedAtRouteResult);
         }
         
         public AcceptedResultAssertions<TController> ShouldAcceptedResult()

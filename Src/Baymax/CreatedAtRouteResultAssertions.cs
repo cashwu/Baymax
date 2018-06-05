@@ -4,32 +4,30 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Baymax
 {
-    public class CreatedAtRouteResultAssertions<TController> where TController : Controller
+    public class CreatedAtRouteResultAssertions
     {
         private readonly CreatedAtRouteResult _createdAtRouteResult;
-        private readonly TController _controller;
 
-        public CreatedAtRouteResultAssertions(CreatedAtRouteResult createdAtRouteResult, TController controller)
+        public CreatedAtRouteResultAssertions(CreatedAtRouteResult createdAtRouteResult)
         {
             _createdAtRouteResult = createdAtRouteResult;
-            _controller = controller;
         }
 
-        public CreatedAtRouteResultAssertions<TController> WithRouteName(string expectedRouteName)
+        public CreatedAtRouteResultAssertions WithRouteName(string expectedRouteName)
         {
             _createdAtRouteResult.RouteName.Should().Be(expectedRouteName);
             
             return this;
         }
 
-        public CreatedAtRouteResultAssertions<TController> WithRouteValue(string key, object expectedValue)
+        public CreatedAtRouteResultAssertions WithRouteValue(string key, object expectedValue)
         {
             expectedValue.ToExpectedObject().ShouldEqual(_createdAtRouteResult.RouteValues[key]);
             
             return this;
         }
 
-        public CreatedAtRouteResultAssertions<TController> WithValue(object expectedValue)
+        public CreatedAtRouteResultAssertions WithValue(object expectedValue)
         {
             expectedValue.ToExpectedObject().ShouldEqual(_createdAtRouteResult.Value);
 
