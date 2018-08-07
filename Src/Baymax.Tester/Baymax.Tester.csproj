@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>full</DebugType>
-    <PackageId>Baymax</PackageId>
+    <PackageId>Baymax.Tester</PackageId>
     <Version>1.0.1</Version>
     <Authors>cashwu</Authors>
     <Company>cashwu</Company>

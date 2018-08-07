@@ -9,7 +9,8 @@ build:
 test_script:
     - OpenCover.Console.exe -register:user -target:"dotnet.exe" -targetargs:"test" -filter:"+[*]* -[*.Tests]*" -output:"coverage.xml" -oldstyle
     - codecov -f "coverage.xml"
-
+before_deploy:
+    - dotnet pack
 deploy:
   provider: NuGet
   server:                  
