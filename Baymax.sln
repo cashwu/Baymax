@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Baymax", "Src\Baymax\Baymax.csproj", "{5631BD01-50EB-4457-9068-3F602EEBC410}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Baymax.Tester", "Src\Baymax.Tester\Baymax.Tester.csproj", "{5631BD01-50EB-4457-9068-3F602EEBC410}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Baymax.Tests", "Tests\Baymax.Tests\Baymax.Tests.csproj", "{DA771DB4-4A20-4FD7-967E-6DFC991D5785}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Baymax.Tester.Tests", "Tests\Baymax.Tester.Tests\Baymax.Tester.Tests.csproj", "{DA771DB4-4A20-4FD7-967E-6DFC991D5785}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{38B41F17-AF4A-4034-A507-37479A1E3A3F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B150F597-DFA9-4902-A2CD-56C89AFD3EBE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,5 +31,9 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {232DB60A-B03D-4C87-AC12-E69C6CE5F0AA}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5631BD01-50EB-4457-9068-3F602EEBC410} = {38B41F17-AF4A-4034-A507-37479A1E3A3F}
+		{DA771DB4-4A20-4FD7-967E-6DFC991D5785} = {B150F597-DFA9-4902-A2CD-56C89AFD3EBE}
 	EndGlobalSection
 EndGlobal

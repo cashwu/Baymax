@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Baymax
+namespace Baymax.Tester
 {
     public class RedirectResultAssertions<TController> where TController : Controller
     {

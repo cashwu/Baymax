@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Baymax
+namespace Baymax.Tester
 {
     public static class ControllerTesterExtensions
     {

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Xunit;
 using Xunit.Sdk;
 
-namespace Baymax.Tests
+namespace Baymax.Tester.Tests
 {
     public class ContentResultAssertionsTests
     {

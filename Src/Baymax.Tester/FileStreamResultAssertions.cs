@@ -4,7 +4,7 @@ using ExpectedObjects;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Baymax
+namespace Baymax.Tester
 {
     public class FileStreamResultAssertions<TController>
     {

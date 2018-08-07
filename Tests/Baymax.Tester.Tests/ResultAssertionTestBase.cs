@@ -1,4 +1,4 @@
-﻿namespace Baymax.Tests
+﻿namespace Baymax.Tester.Tests
 {
     public class ResultAssertionTestBase
     {

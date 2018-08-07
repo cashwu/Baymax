@@ -12,6 +12,6 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Src\Baymax\Baymax.csproj" />
+    <ProjectReference Include="..\..\Src\Baymax.Tester\Baymax.Tester.csproj" />
   </ItemGroup>
 </Project>

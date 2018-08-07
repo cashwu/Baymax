@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Baymax
+namespace Baymax.Tester
 {
     public class ControllerTester<TController> where TController : Controller
     {

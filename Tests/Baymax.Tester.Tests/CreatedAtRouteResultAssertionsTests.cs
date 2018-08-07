@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Xunit;
 using Xunit.Sdk;
 
-namespace Baymax.Tests
+namespace Baymax.Tester.Tests
 {
     public class CreatedAtRouteResultAssertionsTests : ResultAssertionTestBase
     {

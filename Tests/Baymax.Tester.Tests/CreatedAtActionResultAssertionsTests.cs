@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using ExpectedObjects;
+﻿using ExpectedObjects;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Xunit;
 using Xunit.Sdk;
 
-namespace Baymax.Tests
+namespace Baymax.Tester.Tests
 {
     public class CreatedAtActionResultAssertionsTests : ResultAssertionTestBase
     {

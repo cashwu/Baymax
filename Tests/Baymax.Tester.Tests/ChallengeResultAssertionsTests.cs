@@ -5,19 +5,19 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
-namespace Baymax.Tests
+namespace Baymax.Tester.Tests
 {
-    public class ForbidResultAssertionsTests
+    public class ChallengeResultAssertionsTests
     {
         [Fact]
         public void Result_with_authentication_schemes_assertWithAuthenticationSchemes_should_not_throw_exception()
         {
-            var forbidesult = new ForbidResult
+            var challengeResult = new ChallengeResult
             {
                 AuthenticationSchemes = new List<string> {"Auth1", "Auth2"}
             };
 
-            var assertions = GivenForbidResultAssertions(forbidesult);
+            var assertions = GivenChallengeResultAssertions(challengeResult);
 
             assertions = assertions.WithAuthenticationSchemes(new List<string> {"Auth1", "Auth2"});
 
@@ -27,18 +27,19 @@ namespace Baymax.Tests
         [Fact]
         public void Result_not_authentication_schemes_assertWithAuthenticationSchemes_should_throw_exception()
         {
-            var forbidResult = new ForbidResult();
+            var challengeResult = new ChallengeResult();
 
-            var assertions = GivenForbidResultAssertions(forbidResult);
+            var assertions = GivenChallengeResultAssertions(challengeResult);
 
             Assert.Throws<ComparisonException>(() =>
                 assertions.WithAuthenticationSchemes(new List<string> {"Auth1", "Auth2"}));
         }
-        
+
         [Fact]
-        public void Result_with_authentication_properties_assertWithAuthenticationProperties_should_not_throw_exception()
+        public void
+            Result_with_authentication_properties_assertWithAuthenticationProperties_should_not_throw_exception()
         {
-            var forbidesult = new ForbidResult
+            var challengeResult = new ChallengeResult
             {
                 Properties = new AuthenticationProperties
                 {
@@ -47,7 +48,7 @@ namespace Baymax.Tests
                 }
             };
 
-            var assertions = GivenForbidResultAssertions(forbidesult);
+            var assertions = GivenChallengeResultAssertions(challengeResult);
 
             assertions = assertions.WithAuthenticationProperties(new AuthenticationProperties
             {
@@ -61,9 +62,9 @@ namespace Baymax.Tests
         [Fact]
         public void Result_not_authentication_properties_assertWithAuthenticationProperties_should_throw_exception()
         {
-            var forbidesult = new ForbidResult();
+            var challengeResult = new ChallengeResult();
 
-            var assertions = GivenForbidResultAssertions(forbidesult);
+            var assertions = GivenChallengeResultAssertions(challengeResult);
 
             Assert.Throws<ComparisonException>(() =>
                 assertions.WithAuthenticationProperties(new AuthenticationProperties
@@ -72,10 +73,11 @@ namespace Baymax.Tests
                     Items = {{"key", "value"}}
                 }));
         }
-        
-        private ForbidResultAssertions GivenForbidResultAssertions(ForbidResult forbidesult)
+
+
+        private ChallengeResultAssertions GivenChallengeResultAssertions(ChallengeResult challengeResult)
         {
-            return new ForbidResultAssertions(forbidesult);
+            return new ChallengeResultAssertions(challengeResult);
         }
     }
 }

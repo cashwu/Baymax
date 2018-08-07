@@ -3,7 +3,7 @@ using ExpectedObjects;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Baymax
+namespace Baymax.Tester
 {
     public class ChallengeResultAssertions  
     {
