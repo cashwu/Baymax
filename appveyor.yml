@@ -4,18 +4,19 @@ before_build:
     - dotnet restore
     - choco install opencover.portable
     - choco install codecov
+    - dotnet pack
 build:
   verbosity: minimal
 test_script:
     - OpenCover.Console.exe -register:user -target:"dotnet.exe" -targetargs:"test" -filter:"+[*]* -[*.Tests]*" -output:"coverage.xml" -oldstyle
     - codecov -f "coverage.xml"
-before_deploy:
-    - dotnet pack
+artifacts:
+    - path : .\Src\Baymax.Tester\bin\Debug\*.nupkg
 deploy:
-  provider: NuGet
-  server:                  
-  api_key:
-    secure: YEJhUxU+B84sRzK4ChFAaFwLwC5zhn612E6sFwbu0kNKH20l3AxaH8ouH98Qp4kV 
-  skip_symbols: false
-  symbol_server:           
-  artifact: /.*\.nupkg/
+    - provider: NuGet
+      server:                  
+      api_key:
+        secure: YEJhUxU+B84sRzK4ChFAaFwLwC5zhn612E6sFwbu0kNKH20l3AxaH8ouH98Qp4kV 
+      skip_symbols: false
+      symbol_server:           
+      artifact: /.*\.nupkg/
