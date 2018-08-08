@@ -22,3 +22,9 @@ deploy:
       artifact: /.*\.nupkg/
       on:
         branch: master    
+notifications:
+    - provider: Slack
+      channel: build
+      incoming_webhook:
+        secure: phSiyDQ19vgqYVDTBfmNNP06mpm3BU1Lnuz0Myx+mcXy2t/gqzSuejdku61ZGJbEEsctmMF/IwU3uxRqit4YbI5XnX5uc9mKZw0QJAcBf9A=
+ 
