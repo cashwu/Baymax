@@ -12,8 +12,6 @@ test_script:
     - codecov -f "coverage.xml"
 artifacts:
     - path : .\Src\Baymax.Tester\bin\Debug\*.nupkg
-      on:
-        branch: master
 deploy:
     - provider: NuGet
       server:                  
