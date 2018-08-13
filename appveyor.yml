@@ -4,9 +4,15 @@ before_build:
     - dotnet restore
     - choco install opencover.portable
     - choco install codecov
+    - choco install "msbuild-sonarqube-runner" -y
     - dotnet pack
 build:
   verbosity: minimal
+build_script:
+  - choco install "msbuild-sonarqube-runner" -y
+  - MSBuild.SonarQube.Runner.exe begin /k:"Baymax" /d:"sonar.host.url=https://sonarqube.com" /d:"sonar.login=BQzWMnMkld7fcxUe3GyBM7+OMpPJJRPULtJfO7qLSNlxZ5G8C2SUIbfUpau1wl2f"
+  - dotnet build
+  - MSBuild.SonarQube.Runner.exe end /d:"sonar.login=BQzWMnMkld7fcxUe3GyBM7+OMpPJJRPULtJfO7qLSNlxZ5G8C2SUIbfUpau1wl2f"
 test_script:
     - OpenCover.Console.exe -register:user -target:"dotnet.exe" -targetargs:"test" -filter:"+[*]* -[*.Tests]*" -output:"coverage.xml" -oldstyle
     - codecov -f "coverage.xml"
