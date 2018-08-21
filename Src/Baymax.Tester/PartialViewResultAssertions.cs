@@ -7,12 +7,10 @@ namespace Baymax.Tester
     public class PartialViewResultAssertions<TController> where TController : Controller
     {
         private readonly PartialViewResult _partialViewResult;
-        private readonly Controller _controller;
 
-        public PartialViewResultAssertions(PartialViewResult partialViewResult, Controller controller)
+        public PartialViewResultAssertions(PartialViewResult partialViewResult)
         {
             _partialViewResult = partialViewResult;
-            _controller = controller;
         }
         
         public PartialViewResultAssertions<TController> WithModel<T>(T expected)

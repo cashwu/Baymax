@@ -9,12 +9,10 @@ namespace Baymax.Tester
     public class FileStreamResultAssertions<TController>
     {
         private readonly FileStreamResult _fileStreamResult;
-        private readonly TController _controller;
 
-        public FileStreamResultAssertions(FileStreamResult fileStreamResult, TController controller)
+        public FileStreamResultAssertions(FileStreamResult fileStreamResult)
         {
             this._fileStreamResult = fileStreamResult;
-            this._controller = controller;
         }
         
         public FileStreamResultAssertions<TController> WithContentType(string expectedContentType)

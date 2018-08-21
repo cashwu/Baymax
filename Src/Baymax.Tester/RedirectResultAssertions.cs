@@ -6,12 +6,10 @@ namespace Baymax.Tester
     public class RedirectResultAssertions<TController> where TController : Controller
     {
         private readonly RedirectResult _redirectResult;
-        private readonly TController _controller;
 
-        public RedirectResultAssertions(RedirectResult redirectResult, TController controller)
+        public RedirectResultAssertions(RedirectResult redirectResult)
         {
             _redirectResult = redirectResult;
-            _controller = controller;
         }
         
         public RedirectResultAssertions<TController> WithUrl(string expectedUrl)

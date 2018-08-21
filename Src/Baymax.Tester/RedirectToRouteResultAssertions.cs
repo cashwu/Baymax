@@ -7,12 +7,10 @@ namespace Baymax.Tester
     public class RedirectToRouteResultAssertions<TController> where TController : Controller
     {
         private readonly RedirectToRouteResult _redirectToRouteResult;
-        private readonly TController _controller;
 
-        public RedirectToRouteResultAssertions(RedirectToRouteResult redirectToRouteResult, TController controller)
+        public RedirectToRouteResultAssertions(RedirectToRouteResult redirectToRouteResult)
         {
             _redirectToRouteResult = redirectToRouteResult;
-            _controller = controller;
         }
         
         public RedirectToRouteResultAssertions<TController> WithFragment(string expectedFragment)
