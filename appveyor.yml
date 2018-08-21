@@ -4,9 +4,15 @@ before_build:
     - dotnet restore
     - choco install opencover.portable
     - choco install codecov
-    - dotnet pack
+    - dotnet tool install --global dotnet-sonarscanner
 build:
   verbosity: minimal
+build_script:
+  - dotnet sonarscanner begin /k:"cashwu-github" /d:"sonar.host.url=https://sonarqube.com" /d:sonar.login="%SONAR_TOKEN%"
+  - dotnet build
+after_build:
+  - dotnet sonarscanner end /d:sonar.login="%SONAR_TOKEN%"
+  - dotnet pack
 test_script:
     - OpenCover.Console.exe -register:user -target:"dotnet.exe" -targetargs:"test" -filter:"+[*]* -[*.Tests]*" -output:"coverage.xml" -oldstyle
     - codecov -f "coverage.xml"
@@ -21,10 +27,8 @@ deploy:
       symbol_server:           
       artifact: /.*\.nupkg/
       on:
-        branch: master    
-notifications:
-    - provider: Slack
-      channel: build
-      incoming_webhook:
-        secure: phSiyDQ19vgqYVDTBfmNNP06mpm3BU1Lnuz0Myx+mcXy2t/gqzSuejdku61ZGJbEEsctmMF/IwU3uxRqit4YbI5XnX5uc9mKZw0QJAcBf9A=
- 
+        branch: master   
+
+environment:
+  SONAR_TOKEN:
+    secure: BQzWMnMkld7fcxUe3GyBM7+OMpPJJRPULtJfO7qLSNlxZ5G8C2SUIbfUpau1wl2f
