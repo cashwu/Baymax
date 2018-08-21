@@ -29,6 +29,12 @@ deploy:
       on:
         branch: master   
 
+notifications:
+  - provider: Slack
+    incoming_webhook:
+      secure: phSiyDQ19vgqYVDTBfmNNP06mpm3BU1Lnuz0Myx+mcXy2t/gqzSuejdku61ZGJbEEsctmMF/IwU3uxRqit4YbI5XnX5uc9mKZw0QJAcBf9A=
+    channel: build
+
 environment:
   SONAR_TOKEN:
     secure: BQzWMnMkld7fcxUe3GyBM7+OMpPJJRPULtJfO7qLSNlxZ5G8C2SUIbfUpau1wl2f
