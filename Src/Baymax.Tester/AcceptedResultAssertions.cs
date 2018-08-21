@@ -16,7 +16,6 @@ namespace Baymax.Tester
         public AcceptedResultAssertions<TController> WithLocation(string expectedLocation)
         {
             _acceptedResult.Location.Should().Be(expectedLocation);
-            _acceptedResult.Location.Should().Be(expectedLocation);
 
             return this;
         }
