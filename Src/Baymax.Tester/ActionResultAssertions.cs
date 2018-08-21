@@ -32,7 +32,7 @@ namespace Baymax.Tester
         {
             _actionResult.Should().BeOfType<ViewResult>();
 
-            return new ViewResultAssertions<TController>(_actionResult as ViewResult, _controller);
+            return new ViewResultAssertions<TController>(_actionResult as ViewResult);
         }
 
         public ContentResultAssertions ShouldBeContentResult()
@@ -46,14 +46,14 @@ namespace Baymax.Tester
         {
             _actionResult.Should().BeOfType<ContentResult>();
 
-            return new FileContentResultAssertions<TController>(_actionResult as FileContentResult, _controller);
+            return new FileContentResultAssertions<TController>(_actionResult as FileContentResult);
         }
 
         public FileStreamResultAssertions<TController> ShouldBeFileStreamResult()
         {
             _actionResult.Should().BeOfType<FileStreamResult>();
 
-            return new FileStreamResultAssertions<TController>(_actionResult as FileStreamResult, _controller);
+            return new FileStreamResultAssertions<TController>(_actionResult as FileStreamResult);
         }
 
         public void ShouldBeEmptyResult()
@@ -65,14 +65,14 @@ namespace Baymax.Tester
         {
             _actionResult.Should().BeOfType<PartialViewResult>();
 
-            return new PartialViewResultAssertions<TController>(_actionResult as PartialViewResult, _controller);
+            return new PartialViewResultAssertions<TController>(_actionResult as PartialViewResult);
         }
 
         public RedirectResultAssertions<TController> ShouldBeRedirectResult()
         {
             _actionResult.Should().BeOfType<RedirectResult>();
 
-            return new RedirectResultAssertions<TController>(_actionResult as RedirectResult, _controller);
+            return new RedirectResultAssertions<TController>(_actionResult as RedirectResult);
         }
 
         public ForbidResultAssertions ShouldBeForbidResult()
@@ -86,21 +86,21 @@ namespace Baymax.Tester
         {
             _actionResult.Should().BeOfType<LocalRedirectResult>();
             
-           return new LocalRedirectResultAssertions<TController>(_actionResult as LocalRedirectResult, _controller); 
+           return new LocalRedirectResultAssertions<TController>(_actionResult as LocalRedirectResult); 
         }
 
         public RedirectToRouteResultAssertions<TController> ShouldBeRedirectToRouteResult()
         {
             _actionResult.Should().BeOfType<RedirectToRouteResult>();
 
-            return new RedirectToRouteResultAssertions<TController>(_actionResult as RedirectToRouteResult, _controller);
+            return new RedirectToRouteResultAssertions<TController>(_actionResult as RedirectToRouteResult);
         }
         
         public StatusCodeResultAssertions<TController> ShouldBeStatusCodeResult()
         {
             _actionResult.Should().BeOfType<StatusCodeResult>();
 
-            return new StatusCodeResultAssertions<TController>(_actionResult as StatusCodeResult, _controller);
+            return new StatusCodeResultAssertions<TController>(_actionResult as StatusCodeResult);
         }
 
         public ChallengeResultAssertions ShouldBeChallengeResult()

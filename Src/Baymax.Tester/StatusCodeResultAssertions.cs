@@ -6,12 +6,10 @@ namespace Baymax.Tester
     public class StatusCodeResultAssertions<TController> where TController : Controller
     {
         private readonly StatusCodeResult _statusCodeResult;
-        private readonly TController _controller;
 
-        public StatusCodeResultAssertions(StatusCodeResult statusCodeResult, TController controller)
+        public StatusCodeResultAssertions(StatusCodeResult statusCodeResult)
         {
             _statusCodeResult = statusCodeResult;
-            _controller = controller;
         }
 
         public StatusCodeResultAssertions<TController> WithStatusCode(int expectedStatudCode)

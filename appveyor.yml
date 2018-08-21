@@ -8,16 +8,16 @@ before_build:
 build:
   verbosity: minimal
 build_script:
-  - dotnet sonarscanner begin /k:"Baymax" /d:"sonar.host.url=https://sonarqube.com" /d:sonar.login=%SONAR_TOKEN% /d:sonar.organization=cashwu-github
+  - dotnet sonarscanner begin /k:"Baymax" /d:"sonar.host.url=https://sonarqube.com" /d:sonar.login=%SONAR_TOKEN% /d:sonar.organization=cashwu-github /d:sonar.cs.opencover.reportsPaths="coverage.xml"
   - dotnet build
-  - dotnet sonarscanner end /d:sonar.login=%SONAR_TOKEN%
 after_build:
   - dotnet pack
 test_script:
-    - OpenCover.Console.exe -register:user -target:"dotnet.exe" -targetargs:"test" -filter:"+[*]* -[*.Tests]*" -output:"coverage.xml" -oldstyle
-    - codecov -f "coverage.xml"
+  - OpenCover.Console.exe -register:user -target:"dotnet.exe" -targetargs:"test" -filter:"+[*]* -[*.Tests]*" -output:"coverage.xml" -oldstyle
+  - codecov -f "coverage.xml"
+  - dotnet sonarscanner end /d:sonar.login=%SONAR_TOKEN%
 artifacts:
-    - path : .\Src\Baymax.Tester\bin\Debug\*.nupkg
+  - path : .\Src\Baymax.Tester\bin\Debug\*.nupkg
 deploy:
     - provider: NuGet
       server:                  
@@ -28,6 +28,12 @@ deploy:
       artifact: /.*\.nupkg/
       on:
         branch: master   
+
+notifications:
+  - provider: Slack
+    incoming_webhook:
+      secure: phSiyDQ19vgqYVDTBfmNNP06mpm3BU1Lnuz0Myx+mcXy2t/gqzSuejdku61ZGJbEEsctmMF/IwU3uxRqit4YbI5XnX5uc9mKZw0QJAcBf9A=
+    channel: build
 
 environment:
   SONAR_TOKEN:

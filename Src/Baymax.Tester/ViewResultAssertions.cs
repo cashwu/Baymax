@@ -7,12 +7,10 @@ namespace Baymax.Tester
     public class ViewResultAssertions<TController> where TController : Controller
     {
         private readonly ViewResult _viewResult;
-        private readonly TController _controller;
 
-        public ViewResultAssertions(ViewResult viewResult, TController controller)
+        public ViewResultAssertions(ViewResult viewResult)
         {
             _viewResult = viewResult;
-            _controller = controller;
         }
 
         public ViewResultAssertions<TController> WithModel<T>(T expected)
