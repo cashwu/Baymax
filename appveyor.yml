@@ -8,10 +8,10 @@ before_build:
 build:
   verbosity: minimal
 build_script:
-  - dotnet sonarscanner begin /k:"cashwu-github" /d:"sonar.host.url=https://sonarqube.com" /d:sonar.login="%SONAR_TOKEN%"
+  - dotnet sonarscanner begin /k:"Baymax" /d:"sonar.host.url=https://sonarqube.com" /d:sonar.login=%SONAR_TOKEN% /d:sonar.organization=cashwu-github
   - dotnet build
+  - dotnet sonarscanner end /d:sonar.login=%SONAR_TOKEN%
 after_build:
-  - dotnet sonarscanner end /d:sonar.login="%SONAR_TOKEN%"
   - dotnet pack
 test_script:
     - OpenCover.Console.exe -register:user -target:"dotnet.exe" -targetargs:"test" -filter:"+[*]* -[*.Tests]*" -output:"coverage.xml" -oldstyle
