@@ -8,7 +8,7 @@ before_build:
 build:
   verbosity: minimal
 build_script:
-  - dotnet sonarscanner begin /k:"Baymax" /d:"sonar.host.url=https://sonarqube.com" /d:sonar.login=%SONAR_TOKEN% /d:sonar.organization=cashwu-github
+  - dotnet sonarscanner begin /k:"Baymax" /d:"sonar.host.url=https://sonarqube.com" /d:sonar.login=%SONAR_TOKEN% /d:sonar.organization=cashwu-github /d:sonar.cs.opencover.reportsPaths="coverage.xml"
   - dotnet build
   - dotnet sonarscanner end /d:sonar.login=%SONAR_TOKEN%
 after_build:
