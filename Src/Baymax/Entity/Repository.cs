@@ -266,7 +266,7 @@ namespace Baymax.Entity
 
         public virtual IEnumerable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate = null)
         {
-            IQueryable<TEntity> query = _dbContext.Set<TEntity>();
+            IQueryable<TEntity> query = _dbSet;
 
             if (predicate != null)
             {
@@ -278,7 +278,7 @@ namespace Baymax.Entity
 
         public virtual IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, bool disableTrack = true)
         {
-            IQueryable<TEntity> query = _dbContext.Set<TEntity>();
+            IQueryable<TEntity> query = _dbSet;
 
             if (disableTrack)
             {
@@ -290,8 +290,7 @@ namespace Baymax.Entity
 
         public virtual bool Any(Expression<Func<TEntity, bool>> predicate)
         {
-            IQueryable<TEntity> query = _dbContext.Set<TEntity>();
-            return query.Any(predicate);
+            return _dbSet.Any(predicate);
         }
     }
 }
