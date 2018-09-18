@@ -1,11 +1,14 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Baymax.Entity.Interface
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork<out TDbContext> : IDisposable where TDbContext : DbContext
     {
+        TDbContext DbContext { get; }
+        
         IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity;
 
         IViewRepository<TEntity> GetViewRepository<TEntity>() where TEntity : ViewEntity;

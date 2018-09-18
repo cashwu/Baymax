@@ -10,17 +10,17 @@ namespace Baymax.Entity
     public class ViewRepository<TEntity> : IViewRepository<TEntity> where TEntity : ViewEntity
     {
         private readonly DbContext _dbContext;
-        private DbSet<TEntity> _dbSet;
+        private readonly DbQuery<TEntity> _dbQuery;
 
         public ViewRepository(DbContext dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _dbSet = _dbContext.Set<TEntity>();
+            _dbQuery = _dbContext.Query<TEntity>();
         }
 
-        public virtual IEnumerable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate = null)
+        public IEnumerable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate = null)
         {
-            IQueryable<TEntity> query = _dbContext.Query<TEntity>();
+            IQueryable<TEntity> query = _dbQuery;
 
             if (predicate != null)
             {

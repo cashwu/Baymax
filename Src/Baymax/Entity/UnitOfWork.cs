@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Transactions;
 using Baymax.Entity.Interface;
 using Microsoft.EntityFrameworkCore;
 
@@ -77,24 +76,6 @@ namespace Baymax.Entity
         public virtual IQueryable<TEntity> FromSql<TEntity>(string sql, params object[] parameters) where TEntity : BaseEntity
         {
             return _context.Set<TEntity>().FromSql(sql, parameters);
-        }
-
-        public virtual async Task<int> CommitAsync(params IUnitOfWork[] unitOfWorks)
-        {
-            using (var ts = new TransactionScope())
-            {
-                var count = 0;
-                foreach (var unitOfWork in unitOfWorks)
-                {
-                    count += await unitOfWork.CommitAsync();
-                }
-
-                count += await CommitAsync();
-
-                ts.Complete();
-
-                return count;
-            }
         }
 
         public virtual void Dispose()
