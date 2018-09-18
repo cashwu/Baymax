@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Baymax.Entity
 {
-    public class ViewRepository<TEntity> : IViewRepository<TEntity> where TEntity : ViewEntity
+    public class BaymaxViewRepository<TEntity> : IBaymaxViewRepository<TEntity> where TEntity : ViewEntity
     {
         private readonly DbContext _dbContext;
         private readonly DbQuery<TEntity> _dbQuery;
 
-        public ViewRepository(DbContext dbContext)
+        public BaymaxViewRepository(DbContext dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _dbQuery = _dbContext.Query<TEntity>();

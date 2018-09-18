@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Query;
 
 namespace Baymax.Entity.Interface
 {
-    public interface IRepository<TEntity> where TEntity : BaseEntity
+    public interface IBaymaxRepository<TEntity> where TEntity : BaseEntity
     {
         void ChangeTable(string table);
 

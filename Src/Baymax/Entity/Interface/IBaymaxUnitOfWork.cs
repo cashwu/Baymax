@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Baymax.Entity.Interface
 {
-    public interface IUnitOfWork<out TDbContext> : IDisposable where TDbContext : DbContext
+    public interface IBaymaxUnitOfWork<out TDbContext> : IDisposable where TDbContext : DbContext
     {
         TDbContext DbContext { get; }
         
-        IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity;
+        IBaymaxRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity;
 
-        IViewRepository<TEntity> GetViewRepository<TEntity>() where TEntity : ViewEntity;
+        IBaymaxViewRepository<TEntity> GetViewRepository<TEntity>() where TEntity : ViewEntity;
 
         int Commit();
         

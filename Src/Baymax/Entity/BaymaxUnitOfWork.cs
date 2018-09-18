@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Baymax.Entity
 {
-    public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext> where TDbContext : DbContext
+    public class BaymaxUnitOfWork<TDbContext> : IBaymaxUnitOfWork<TDbContext> where TDbContext : DbContext
     {
         private readonly TDbContext _context;
         private Dictionary<Type, object> repositories;
         private bool disposed;
 
-        public UnitOfWork(TDbContext context)
+        public BaymaxUnitOfWork(TDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
@@ -26,7 +26,7 @@ namespace Baymax.Entity
             }
         }
 
-        public virtual IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
+        public virtual IBaymaxRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
         {
             if (repositories == null)
             {
@@ -36,13 +36,13 @@ namespace Baymax.Entity
             var type = typeof(TEntity);
             if (!repositories.ContainsKey(type))
             {
-                repositories[type] = new Repository<TEntity>(_context);
+                repositories[type] = new BaymaxRepository<TEntity>(_context);
             }
 
-            return (IRepository<TEntity>) repositories[type];
+            return (IBaymaxRepository<TEntity>) repositories[type];
         }
 
-        public virtual IViewRepository<TEntity> GetViewRepository<TEntity>() where TEntity : ViewEntity
+        public virtual IBaymaxViewRepository<TEntity> GetViewRepository<TEntity>() where TEntity : ViewEntity
         {
             if (repositories == null)
             {
@@ -52,10 +52,10 @@ namespace Baymax.Entity
             var type = typeof(TEntity);
             if (!repositories.ContainsKey(type))
             {
-                repositories[type] = new ViewRepository<TEntity>(_context);
+                repositories[type] = new BaymaxViewRepository<TEntity>(_context);
             }
 
-            return (IViewRepository<TEntity>) repositories[type];
+            return (IBaymaxViewRepository<TEntity>) repositories[type];
         }
 
         public virtual int Commit()

@@ -14,12 +14,12 @@ using Microsoft.EntityFrameworkCore.Query;
 
 namespace Baymax.Entity
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
+    public class BaymaxRepository<TEntity> : IBaymaxRepository<TEntity> where TEntity : BaseEntity
     {
         private readonly DbContext _dbContext;
         private readonly DbSet<TEntity> _dbSet;
 
-        public Repository(DbContext dbContext)
+        public BaymaxRepository(DbContext dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _dbSet = _dbContext.Set<TEntity>();

@@ -3,7 +3,7 @@ using System.Net.Http;
 
 namespace Baymax.Tester.Integration
 {
-    public static class HttpHelper
+    public static class HttpClientExtension
     {
         public static TResult GetHttpResult<TResult>(this HttpClient httpClient, string url)
         {
