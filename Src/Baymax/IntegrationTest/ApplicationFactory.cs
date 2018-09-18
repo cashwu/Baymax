@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Baymax.Tester.Integration
 {
     public class ApplicationFactory<TStartup, TDbContext> : WebApplicationFactory<TStartup> 
-            where TStartup : class, new()
+            where TStartup : class
             where TDbContext : DbContext
     {
         public event EventHandler<InitDataEventArgs<TDbContext>> InitDataEvent;
