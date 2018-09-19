@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>full</DebugType>
     <PackageId>Baymax</PackageId>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <Authors>cashwu</Authors>
     <Company>cashwu</Company>
     <AssemblyName>Baymax</AssemblyName>
@@ -17,8 +17,5 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="2.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.3" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Extension" />
   </ItemGroup>
 </Project>
