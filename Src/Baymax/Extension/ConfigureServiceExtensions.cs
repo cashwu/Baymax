@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Baymax.Extension
 {
-    public static class ConfigureServiceExtension
+    public static class ConfigureServiceExtensions
     {
         public static void AddDefaultConfigMapping(this IServiceCollection services, IConfiguration configuration)
         {
