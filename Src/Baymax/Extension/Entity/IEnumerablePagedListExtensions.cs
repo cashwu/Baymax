@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Baymax.Entity.Interface;
 
-namespace Baymax.Entity.Extension
+namespace Baymax.Extension.Entity
 {
     public static class IEnumerablePagedListExtensions
     {

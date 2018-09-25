@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Baymax.Entity.Interface;
 using Microsoft.EntityFrameworkCore;
 
-namespace Baymax.Entity.Extension
+namespace Baymax.Extension.Entity
 {
     public static class IQueryablePageListExtensions
     {
