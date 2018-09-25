@@ -42,7 +42,7 @@ namespace Baymax.Entity
             return (IBaymaxRepository<TEntity>) repositories[type];
         }
 
-        public virtual IBaymaxViewRepository<TEntity> GetViewRepository<TEntity>() where TEntity : ViewEntity
+        public virtual IBaymaxQueryRepository<TEntity> GetViewRepository<TEntity>() where TEntity : QueryEntity
         {
             if (repositories == null)
             {
@@ -52,10 +52,10 @@ namespace Baymax.Entity
             var type = typeof(TEntity);
             if (!repositories.ContainsKey(type))
             {
-                repositories[type] = new BaymaxViewRepository<TEntity>(_context);
+                repositories[type] = new BaymaxQueryRepository<TEntity>(_context);
             }
 
-            return (IBaymaxViewRepository<TEntity>) repositories[type];
+            return (IBaymaxQueryRepository<TEntity>) repositories[type];
         }
 
         public virtual int Commit()
@@ -71,11 +71,6 @@ namespace Baymax.Entity
         public virtual int ExecuteSqlCommand(string sql, params object[] parameters)
         {
             return _context.Database.ExecuteSqlCommand(sql, parameters);
-        }
-
-        public virtual IQueryable<TEntity> FromSql<TEntity>(string sql, params object[] parameters) where TEntity : BaseEntity
-        {
-            return _context.Set<TEntity>().FromSql(sql, parameters);
         }
 
         public virtual void Dispose()

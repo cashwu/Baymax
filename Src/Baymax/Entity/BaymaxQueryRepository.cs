@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Baymax.Entity
 {
-    public class BaymaxViewRepository<TEntity> : IBaymaxViewRepository<TEntity> where TEntity : ViewEntity
+    public class BaymaxQueryRepository<TEntity> : IBaymaxQueryRepository<TEntity> where TEntity : QueryEntity
     {
         private readonly DbContext _dbContext;
         private readonly DbQuery<TEntity> _dbQuery;
 
-        public BaymaxViewRepository(DbContext dbContext)
+        public BaymaxQueryRepository(DbContext dbContext)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _dbQuery = _dbContext.Query<TEntity>();
@@ -28,6 +28,16 @@ namespace Baymax.Entity
             }
 
             return query.Select(selector);
+        }
+
+        public IQueryable<TEntity> FromSql(RawSqlString sql, params object[] parameters) 
+        {
+            return _dbQuery.FromSql(sql, parameters);
+        }
+
+        public IQueryable<TEntity> FromSql(FormattableString sql)
+        {
+            return _dbQuery.FromSql(sql);
         }
     }
 }

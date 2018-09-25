@@ -1,6 +1,6 @@
 namespace Baymax.Entity
 {
-    public class ViewEntity
+    public class QueryEntity
     {
     }
 }

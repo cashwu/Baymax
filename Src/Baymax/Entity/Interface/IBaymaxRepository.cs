@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
 namespace Baymax.Entity.Interface
@@ -28,7 +29,9 @@ namespace Baymax.Entity.Interface
 
         Task<TEntity> GetFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null, bool disableTracking = true);
 
-        IQueryable<TEntity> FromSql(string sql, params object[] parameters);
+        IQueryable<TEntity> FromSql(RawSqlString sql, params object[] parameters);
+        
+        IQueryable<TEntity> FromSql(FormattableString sql);
 
         TEntity Find(params object[] keyValues);
 

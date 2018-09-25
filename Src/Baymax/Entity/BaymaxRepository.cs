@@ -127,9 +127,14 @@ namespace Baymax.Entity
             return query.FirstOrDefaultAsync();
         }
 
-        public virtual IQueryable<TEntity> FromSql(string sql, params object[] parameters)
+        public virtual IQueryable<TEntity> FromSql(RawSqlString sql, params object[] parameters)
         {
             return _dbSet.FromSql(sql, parameters);
+        }
+
+        public IQueryable<TEntity> FromSql(FormattableString sql)
+        {
+            return _dbSet.FromSql(sql);
         }
 
         public virtual TEntity Find(params object[] keyValues)

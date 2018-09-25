@@ -11,14 +11,12 @@ namespace Baymax.Entity.Interface
         
         IBaymaxRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity;
 
-        IBaymaxViewRepository<TEntity> GetViewRepository<TEntity>() where TEntity : ViewEntity;
+        IBaymaxQueryRepository<TEntity> GetViewRepository<TEntity>() where TEntity : QueryEntity;
 
         int Commit();
         
         Task<int> CommitAsync();
         
         int ExecuteSqlCommand(string sql, params object[] parameters);
-
-        IQueryable<TEntity> FromSql<TEntity>(string sql, params object[] parameters) where TEntity : BaseEntity;
     }
 }
