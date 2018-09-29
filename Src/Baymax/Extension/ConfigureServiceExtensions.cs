@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Baymax.Attribute;
 using Baymax.Model.Config;
@@ -15,11 +17,16 @@ namespace Baymax.Extension
 
             foreach (var type in types)
             {
-                services.AddScoped(type, provider =>
+                var configSection = type.GetCustomAttribute<ConfigSectionAttribute>();
+
+                var t = type;
+
+                if (configSection.IsCollections)
                 {
-                    var configSection = type.GetCustomAttribute<ConfigSectionAttribute>();
-                    return configuration.GetSection(configSection.Name).Get(type);
-                });
+                    t = typeof(List<>).MakeGenericType(configSection.CollectionType ?? type);
+                }
+
+                services.AddScoped(t, provider => configuration.GetSection(configSection.Name).Get(t));
             }
         }
 
