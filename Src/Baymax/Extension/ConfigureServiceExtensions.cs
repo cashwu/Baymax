@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using Baymax.Attribute;
 using Baymax.Model.Config;
+using Baymax.Services;
+using Baymax.Services.Interface;
 using Baymax.Util;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +30,12 @@ namespace Baymax.Extension
 
                 services.AddScoped(t, provider => configuration.GetSection(configSection.Name).Get(t));
             }
+        }
+
+        public static void AddLogService(this IServiceCollection services)
+        {
+            services.AddRegisterAllType<ILogBase>(ServiceLifetime.Scoped);
+            services.AddScoped<ILogService, LogService>();
         }
 
         public static void AddRegisterAllType<T>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Transient)
