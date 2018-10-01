@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <DebugType>full</DebugType>
     <PackageId>Baymax</PackageId>
-    <Version>1.0.10</Version>
+    <Version>1.0.11</Version>
     <Authors>cashwu</Authors>
     <Company>cashwu</Company>
     <AssemblyName>Baymax</AssemblyName>
@@ -13,6 +13,7 @@
     <PackageReference Include="ExpectedObjects" Version="2.3.4" />
     <PackageReference Include="FluentAssertions" Version="5.4.2" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="2.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.3" />
