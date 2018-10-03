@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Baymax.Attribute;
 using Baymax.Model.Config;
@@ -28,22 +29,48 @@ namespace Baymax.Extension
                     t = typeof(List<>).MakeGenericType(configSection.CollectionType ?? type);
                 }
 
-                services.AddScoped(t, provider => configuration.GetSection(configSection.Name).Get(t));
+                services.Add(new ServiceDescriptor(t, provider => configuration.GetSection(configSection.Name).Get(t), configSection.Lifetime));
             }
         }
 
         public static void AddLogService(this IServiceCollection services)
         {
-            services.AddRegisterAllType<ILogBase>(ServiceLifetime.Scoped);
+            services.AddRegisterAllType<ILogBase>();
             services.AddScoped<ILogService, LogService>();
         }
 
-        public static void AddRegisterAllType<T>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Transient)
+        public static void AddRegisterAllType<T>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
             var typesFromAssemblies = Reflection.GetAssembliesTypeOf<T>();
             foreach (var type in typesFromAssemblies)
             {
                 services.Add(new ServiceDescriptor(typeof(T), type, lifetime));
+            }
+        }
+
+        public static void AddRegisterAllTypeFor(this IServiceCollection services,
+                                                 Func<Assembly, bool> assemblyCondition,
+                                                 Func<TypeInfo, bool> typeNameCondition,
+                                                 Dictionary<string, ServiceLifetime> typeLifetimeLookup)
+        {
+            if (typeNameCondition == null)
+            {
+                return;
+            }
+
+            var assemblies = Reflection.GetAssembliesTypeOf(assemblyCondition, typeNameCondition);
+            foreach (var @class in assemblies)
+            {
+                foreach (var @interface in @class.GetInterfaces().Where(a => typeNameCondition.Invoke(a.GetTypeInfo())))
+                {
+                    var lifetime = ServiceLifetime.Scoped;
+                    if (typeLifetimeLookup.ContainsKey(@class.Name))
+                    {
+                        lifetime = typeLifetimeLookup[@class.Name];
+                    }
+
+                    services.Add(new ServiceDescriptor(@interface, @class.AsType(), lifetime));
+                }
             }
         }
     }
