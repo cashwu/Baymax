@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using Baymax.Attribute;
+using Baymax.Entity;
 using Baymax.Model.Config;
 using Baymax.Services;
 using Baymax.Services.Interface;
 using Baymax.Util;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,6 +17,12 @@ namespace Baymax.Extension
 {
     public static class ConfigureServiceExtensions
     {
+        public static void AddEntityValidation<TEntity>(this IServiceCollection services, Func<object, ValidationResult> checkFunc)
+                where TEntity : BaseEntity
+        {
+            EntityValidation.SetProcessRoutines(typeof(TEntity), checkFunc);
+        }
+
         public static void AddBackgroundServiceFor(this IServiceCollection services, params Type[] type)
         {
             foreach (var t in type)
@@ -69,7 +76,7 @@ namespace Baymax.Extension
             }
         }
 
-        public static void AddRegisterServiceTypeOf(this IServiceCollection services, string prefixAssemblyName)
+        public static void AddRegisterServiceTypeOf(this IServiceCollection services, string prefixAssemblyName, Dictionary<Type, ServiceLifetime> customerServiceLifetime = null)
         {
             if (string.IsNullOrEmpty(prefixAssemblyName))
             {
@@ -77,12 +84,14 @@ namespace Baymax.Extension
             }
 
             services.AddRegisterAllTypeFor(f => f.FullName.StartsWith(prefixAssemblyName),
-                                           f => f.Name.EndsWith("Service"));
+                                           f => f.Name.EndsWith("Service"),
+                                           customerServiceLifetime);
         }
 
         private static void AddRegisterAllTypeFor(this IServiceCollection services,
                                                   Func<Assembly, bool> assemblyCondition,
-                                                  Func<TypeInfo, bool> typeNameCondition)
+                                                  Func<TypeInfo, bool> typeNameCondition,
+                                                  Dictionary<Type, ServiceLifetime> customerServiceLifetime)
         {
             var assemblies = Reflection.GetAssembliesTypeOf(assemblyCondition, typeNameCondition);
 
@@ -95,7 +104,21 @@ namespace Baymax.Extension
                         continue;
                     }
 
-                    services.Add(new ServiceDescriptor(@interface, @class.AsType(), ServiceLifetime.Scoped));
+                    var lifeTime = ServiceLifetime.Scoped;
+                    if (customerServiceLifetime != null)
+                    {
+                        if (customerServiceLifetime.ContainsKey(@class))
+                        {
+                            lifeTime = customerServiceLifetime[@class];
+                        }
+
+                        if (customerServiceLifetime.ContainsKey(@interface))
+                        {
+                            lifeTime = customerServiceLifetime[@interface];
+                        }
+                    }
+                    
+                    services.Add(new ServiceDescriptor(@interface, @class.AsType(), lifeTime));
                 }
             }
         }

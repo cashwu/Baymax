@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Baymax.Entity.Interface;
+using Baymax.Exception;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Baymax.Entity
 {
@@ -20,10 +23,7 @@ namespace Baymax.Entity
 
         public virtual TDbContext DbContext
         {
-            get
-            {
-                return _context;
-            }
+            get => _context;
         }
 
         public virtual IBaymaxRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
@@ -60,6 +60,8 @@ namespace Baymax.Entity
 
         public virtual int Commit()
         {
+            ValidateObject();
+            
             return _context.SaveChanges();
         }
 
@@ -78,6 +80,38 @@ namespace Baymax.Entity
             Dispose(true);
 
             GC.SuppressFinalize(this);
+        }
+
+        protected IEnumerable<object> GetEntitiesByState(Func<EntityEntry, bool> predicate)
+        {
+            return DbContext.ChangeTracker.Entries()
+                            .Where(predicate)
+                            .Select(a => a.Entity);
+        }
+
+        private void ValidateObject()
+        {
+            if (!EntityValidation.AnyProcessRoutines())
+            {
+                return;
+            }
+            
+            var entities = GetEntitiesByState(a => a.State == EntityState.Added
+                                                   || a.State == EntityState.Modified);
+
+            foreach (var entity in entities)
+            {
+                var context = new ValidationContext(entity);
+                var results = new List<ValidationResult>();
+                Validator.TryValidateObject(entity, context, results, true);
+
+                EntityValidation.Check(entity, ref results);
+
+                if (results.Any())
+                {
+                    throw new EntityValidationExceptions(results);
+                }
+            }
         }
 
         protected virtual void Dispose(bool disposing)
