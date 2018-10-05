@@ -37,14 +37,14 @@ namespace Baymax.Extension
             }
         }
 
-        public static void AddDefaultConfigMapping(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddDefaultConfigMapping(this IServiceCollection services, IConfiguration configuration, string prefixAssemblyName)
         {
             if (configuration == null)
             {
                 throw new ArgumentNullException(nameof(IConfiguration));
             }
 
-            var types = Reflection.GetAssembliesTypeOf<IConfig>();
+            var types = Reflection.GetAssembliesTypeOf<IConfig>(prefixAssemblyName);
 
             foreach (var type in types)
             {
@@ -59,6 +59,13 @@ namespace Baymax.Extension
 
                 services.Add(new ServiceDescriptor(t, provider => configuration.GetSection(configSection.Name).Get(t), configSection.Lifetime));
             }
+
+            return services;
+        }
+        
+        public static IServiceCollection AddDefaultConfigMapping(this IServiceCollection services, IConfiguration configuration)
+        {
+           return services.AddDefaultConfigMapping(configuration, string.Empty);
         }
 
         public static void AddLogService(this IServiceCollection services)
@@ -69,7 +76,7 @@ namespace Baymax.Extension
 
         public static void AddRegisterAllType<T>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
-            var typesFromAssemblies = Reflection.GetAssembliesTypeOf<T>();
+            var typesFromAssemblies = Reflection.GetAssembliesTypeOf<T>(string.Empty);
             foreach (var type in typesFromAssemblies)
             {
                 services.Add(new ServiceDescriptor(typeof(T), type, lifetime));
