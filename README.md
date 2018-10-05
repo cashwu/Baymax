@@ -10,6 +10,8 @@
  
 ### Config
 
+> 自動強型別對應 config 檔案
+
 #### 註冊
 
 需要在 service 加上 `AddDefaultConfigMapping()`，並且傳入 IConfiguration
