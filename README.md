@@ -51,7 +51,7 @@ public TestConfig : IConfig
 
 使用的話就直接注入 config 的類別就好了
 
-```
+```csharp
 public class IndexController : Controller
 {
     public IndexController(TestConfig testConfig){ ... }
@@ -87,7 +87,7 @@ public TestConfig : IConfig
 
 使用的話就直接注入 List of 集合的型別 
 
-```
+```csharp
 public class IndexController : Controller
 {
     public IndexController(List<int> testConfig){ ... }
