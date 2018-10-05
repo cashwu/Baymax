@@ -1,5 +1,24 @@
 {
   "SingleConfig": {
     "Id": 123
-  }
+  },
+  "ArrayConfigStruct": [
+    1,
+    2,
+    3
+  ],
+  "ArrayConfigObject": [
+    {
+      "Id": 1,
+      "Name": "AA"
+    },
+    {
+      "Id": 2,
+      "Name": "BB"
+    },
+    {
+      "Id": 3,
+      "Name": "CC"
+    }
+  ]
 }
