@@ -18,6 +18,7 @@ test_script:
   - dotnet sonarscanner end /d:sonar.login=%SONAR_TOKEN%
 artifacts:
   - path : .\Src\Baymax\bin\Debug\*.nupkg
+  - path : .\Src\Baymax.Tester\bin\Debug\*.nupkg
 deploy:
     - provider: NuGet
       server:                  
