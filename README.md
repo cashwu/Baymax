@@ -1,4 +1,4 @@
-# Baymax
+# Baymax - ASP.NET Core MVC Utility Framework 
 
 [![Build status](https://ci.appveyor.com/api/projects/status/6685ouqjoyvl0m9h?svg=true)](https://ci.appveyor.com/project/cashwu/baymax)
 
@@ -6,7 +6,13 @@
 
 [![sonarcloud](https://sonarcloud.io/api/project_badges/measure?project=Baymax&metric=alert_status)](https://sonarcloud.io/dashboard?id=Baymax)
 
-## ASP.NET Core MVC Utility Framework 
+---
+
+[![Baymax Nuget](https://img.shields.io/badge/Nuget-Baymax-blue.svg)](https://www.nuget.org/packages/Baymax/)
+
+[![Baymax.Tester Nuget](https://img.shields.io/badge/Nuget-Baymax.Tester-blue.svg)](https://www.nuget.org/packages/Baymax.Tester/)
+
+---
  
 ### Config
 
