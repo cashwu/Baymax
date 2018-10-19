@@ -3,7 +3,7 @@
         <TargetFramework>netstandard2.0</TargetFramework>
         <DebugType>full</DebugType>
         <PackageId>Baymax</PackageId>
-        <Version>1.0.16</Version>
+        <Version>1.0.17</Version>
         <Authors>cashwu</Authors>
         <Company>cashwu</Company>
         <AssemblyName>Baymax</AssemblyName>

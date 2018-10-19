@@ -68,15 +68,17 @@ namespace Baymax.Extension
            return services.AddDefaultConfigMapping(configuration, string.Empty);
         }
 
-        public static void AddLogService(this IServiceCollection services)
+        public static IServiceCollection AddLogService(this IServiceCollection services, string prefixAssemblyName = "")
         {
-            services.AddRegisterAllType<ILogBase>();
+            services.AddRegisterAllType<ILogBase>(prefixAssemblyName: prefixAssemblyName);
             services.AddScoped<ILogService, LogService>();
+
+            return services;
         }
 
-        public static void AddRegisterAllType<T>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped)
+        public static void AddRegisterAllType<T>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped, string prefixAssemblyName = "")
         {
-            var typesFromAssemblies = Reflection.GetAssembliesTypeOf<T>(string.Empty);
+            var typesFromAssemblies = Reflection.GetAssembliesTypeOf<T>(prefixAssemblyName);
             foreach (var type in typesFromAssemblies)
             {
                 services.Add(new ServiceDescriptor(typeof(T), type, lifetime));

@@ -14,13 +14,13 @@
 
 ---
  
-### Config
+## Config
 
 > 自動強型別對應 config 檔案
 
-#### 註冊
+### 註冊
 
-需要在 service 加上 `AddDefaultConfigMapping()`，並且傳入 IConfiguration
+在 service 註冊 DefaultConfigMapping，需要傳入 `IConfiguration` 當參數
 
 ```csharp
 public IConfiguration Configuration { get; }
@@ -36,7 +36,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-#### 單一物件
+### 單一物件
 
 新增一個類別實作 `IConfig`，並且加上 `ConfigSection` attribute，
 第一個參數為 config 的物件名稱，類別的 property 對應到 config 的內容
@@ -76,7 +76,7 @@ public TestConfig : IConfig
 }
 ```
 
-#### 集合物件
+### 集合物件
 
 如果 config 是集合時，需要在 attribute 加上第三個參數 `isCollections = true`，和第四個參數 `collectionType 集合的型別`
 
@@ -119,5 +119,79 @@ public TestConfig : IConfig
         { "Id" : 1, "Name" : "AA" },
         { "Id" : 2, "Name" : "BB" }
     ]
+}
+```
+
+## Log
+
+> 可以寫入多個 Log provider
+
+### 註冊
+
+在 service 註冊 LogService
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddLogService();
+}
+```
+
+如果要指定特別的 Assemble 的話，可以傳入 Assembly 的 prefix 當參數
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddLogService("Baymax");
+}
+```
+
+### 實作 Log 
+
+建立自定義的 Log 並且實作 ILogBase
+除了 message 和 exception 之外，有多一個 EnvironmentName 的參數可以使用，例如某些特定的環境就不記錄 log
+
+```
+public class SlackLog : ILogBase
+{
+    public Task LogAsync(System.Exception ex, string env)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task LogAsync(string msg, string env)
+    {
+        return Task.CompletedTask;
+    }
+}
+
+public class NLogProvider : ILogBase
+{
+    public Task LogAsync(System.Exception ex, string env)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task LogAsync(string msg, string env)
+    {
+        return Task.CompletedTask;
+    }
+}
+```
+
+### 使用
+
+直接注入 ILogService 就可以使用
+
+```csharp
+public class IndexController : Controller
+{
+    public IndexController(ILogService logService){ ... }
+}   
+
+public void Index(){
+{
+    logServicr.Log("TEST");
+    logServicr.Log(new ArgumentException("TEST"));
 }
 ```
