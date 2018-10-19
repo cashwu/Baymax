@@ -239,34 +239,11 @@ namespace Baymax.Entity
             _dbSet.RemoveRange(entities);
         }
 
-        private IQueryable<TEntity> GetBaseQuery(Expression<Func<TEntity, bool>> predicate,
-                                                 Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy,
-                                                 Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include,
-                                                 bool disableTracking)
+        public IQueryable<TEntity> GetAll()
         {
             IQueryable<TEntity> query = _dbSet;
-
-            if (disableTracking)
-            {
-                query = query.AsNoTracking();
-            }
-
-            if (include != null)
-            {
-                query = include(query);
-            }
-
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            if (orderBy != null)
-            {
-                query = orderBy(query);
-            }
-
-            return query;
+            
+            return query.AsNoTracking();
         }
 
         public virtual IEnumerable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate = null)
@@ -296,6 +273,36 @@ namespace Baymax.Entity
         public virtual bool Any(Expression<Func<TEntity, bool>> predicate)
         {
             return _dbSet.Any(predicate);
+        }
+
+        private IQueryable<TEntity> GetBaseQuery(Expression<Func<TEntity, bool>> predicate,
+                                                 Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy,
+                                                 Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include,
+                                                 bool disableTracking)
+        {
+            IQueryable<TEntity> query = _dbSet;
+
+            if (disableTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            return query;
         }
     }
 }
