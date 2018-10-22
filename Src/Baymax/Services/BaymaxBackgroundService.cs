@@ -14,7 +14,7 @@ namespace Baymax.Services
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly Timer _timer;
-        private int _interval;
+        private readonly int _interval;
 
         public BaymaxBackgroundService(IConfiguration configuration, IServiceProvider serviceProvider)
         {

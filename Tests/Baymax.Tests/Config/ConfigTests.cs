@@ -68,7 +68,7 @@ namespace Baymax.Tests.Config
         private ServiceProvider GivenServiceProvider()
         {
             return new ServiceCollection()
-                   .AddDefaultConfigMapping(GivenConfiguration(), "Baymax.Tests")
+                   .AddConfig(GivenConfiguration(), "Baymax.Tests")
                    .BuildServiceProvider();
         }
     }
