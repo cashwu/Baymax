@@ -20,11 +20,11 @@ namespace Baymax.Util
             return assembly.SelectMany(a => a.DefinedTypes.Where(t => t.GetInterfaces().Contains(typeof(T))));
         }
 
-        public static IEnumerable<TypeInfo> GetAssembliesTypeOf(Func<Assembly, bool> assemblyCondition, Func<TypeInfo, bool> typeCondition)
+        public static IEnumerable<TypeInfo> GetAssembliesTypeOf(string prefixAssemblyName, Func<TypeInfo, bool> typeCondition)
         {
-            var assembly = AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic);
+            var assembly = AppDomain.CurrentDomain.GetAssemblies().Where(a => !a.IsDynamic && a.FullName.StartsWith(prefixAssemblyName));
+
             return assembly.SelectMany(a => a.DefinedTypes
-                                             .Where(t => assemblyCondition.Invoke(t.Assembly))
                                              .Where(t => t.IsClass)
                                              .Where(typeCondition));
         }

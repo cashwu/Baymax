@@ -13,14 +13,20 @@
 [![Baymax.Tester Nuget](https://img.shields.io/badge/Nuget-Baymax.Tester-blue.svg)](https://www.nuget.org/packages/Baymax.Tester/)
 
 ---
+
+- [Config](#config)
+- [Log](#log)
+- [Service](#service)
+
+---
  
 ## Config
 
-> 自動強型別對應 config 檔案
+> 自動對應 config 區塊到實體型別，並註冊到 DI
 
 ### 註冊
 
-在 service 註冊 DefaultConfigMapping，需要傳入 `IConfiguration` 當參數
+在 service 註冊 Config，並且傳入 `IConfiguration` 當參數
 
 ```csharp
 public IConfiguration Configuration { get; }
@@ -32,7 +38,7 @@ public Startup(IConfiguration configuration)
 
 public void ConfigureServices(IServiceCollection services)
 {
-    services.AddDefaultConfigMapping(Configuration);
+    services.AddConfig(Configuration);
 }
 ```
 
@@ -122,9 +128,12 @@ public TestConfig : IConfig
 }
 ```
 
+---
+
+
 ## Log
 
-> 可以寫入多個 Log provider
+> 註冊 LogService 到 DI，可以同時寫入多個 Log provider
 
 ### 註冊
 
@@ -151,7 +160,7 @@ public void ConfigureServices(IServiceCollection services)
 建立自定義的 Log 並且實作 ILogBase
 除了 message 和 exception 之外，有多一個 EnvironmentName 的參數可以使用，例如某些特定的環境就不記錄 log
 
-```
+```csharp
 public class SlackLog : ILogBase
 {
     public Task LogAsync(System.Exception ex, string env)
@@ -195,3 +204,78 @@ public void Index(){
     logServicr.Log(new ArgumentException("TEST"));
 }
 ```
+
+---
+
+## Service
+
+> 自動解析註冊結尾是 Service 的型別到 DI
+> 需要注意 Service class 必需要有相對應名稱的 interface
+
+```csharp
+public class TestService : ITestService
+{
+    public void Handle()
+    {
+    }
+}
+
+public interface ITestService
+{
+    void Handle();
+}
+```
+
+### 註冊
+
+在 service 註冊 Service，傳入 Assembly 的 prefix 當參數
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddGeneralService("Baymax");
+}
+```
+
+### 註冊自定義型別的生命周期 
+
+預設注入 Service 的生命周期為 Scope，如果需要修改的話，請傳入第二個參數 Dictionary<Type, ServiceLifetime>
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+   var typeLifetimeDic = new Dictionary<Type, ServiceLifetime>
+   {
+       { typeof(TestService), ServiceLifetime.Singleton }
+   };
+   
+   services.AddGeneralService("Baymax", typeLifetimeDic);
+}
+```
+
+### 使用
+
+直接注入 Service 的 interface 就可以使用
+
+```csharp
+public class IndexController : Controller
+{
+    public IndexController(ITestService testService){ ... }
+}   
+
+public void Index(){
+{
+    testService.handle();
+}
+```
+
+
+
+
+
+
+
+
+
+
+

@@ -23,7 +23,7 @@ namespace Baymax.Extension
             EntityValidation.SetProcessRoutines(typeof(TEntity), checkFunc);
         }
 
-        public static void AddBackgroundServiceFor(this IServiceCollection services, params Type[] type)
+        public static void AddBackgroundService(this IServiceCollection services, params Type[] type)
         {
             foreach (var t in type)
             {
@@ -37,7 +37,7 @@ namespace Baymax.Extension
             }
         }
 
-        public static IServiceCollection AddDefaultConfigMapping(this IServiceCollection services, IConfiguration configuration, string prefixAssemblyName)
+        public static IServiceCollection AddConfig(this IServiceCollection services, IConfiguration configuration, string prefixAssemblyName)
         {
             if (configuration == null)
             {
@@ -62,21 +62,21 @@ namespace Baymax.Extension
 
             return services;
         }
-        
-        public static IServiceCollection AddDefaultConfigMapping(this IServiceCollection services, IConfiguration configuration)
+
+        public static IServiceCollection AddConfig(this IServiceCollection services, IConfiguration configuration)
         {
-           return services.AddDefaultConfigMapping(configuration, string.Empty);
+            return services.AddConfig(configuration, string.Empty);
         }
 
         public static IServiceCollection AddLogService(this IServiceCollection services, string prefixAssemblyName = "")
         {
-            services.AddRegisterAllType<ILogBase>(prefixAssemblyName: prefixAssemblyName);
+            services.AddTypeOf<ILogBase>(prefixAssemblyName);
             services.AddScoped<ILogService, LogService>();
 
             return services;
         }
 
-        public static void AddRegisterAllType<T>(this IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Scoped, string prefixAssemblyName = "")
+        public static void AddTypeOf<T>(this IServiceCollection services, string prefixAssemblyName = "", ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
             var typesFromAssemblies = Reflection.GetAssembliesTypeOf<T>(prefixAssemblyName);
             foreach (var type in typesFromAssemblies)
@@ -85,24 +85,24 @@ namespace Baymax.Extension
             }
         }
 
-        public static void AddRegisterServiceTypeOf(this IServiceCollection services, string prefixAssemblyName, Dictionary<Type, ServiceLifetime> customerServiceLifetime = null)
+        public static IServiceCollection AddGeneralService(this IServiceCollection services, string prefixAssemblyName, Dictionary<Type, ServiceLifetime> customerServiceLifetime = null)
         {
             if (string.IsNullOrEmpty(prefixAssemblyName))
             {
                 throw new ArgumentNullException(nameof(prefixAssemblyName));
             }
 
-            services.AddRegisterAllTypeFor(f => f.FullName.StartsWith(prefixAssemblyName),
-                                           f => f.Name.EndsWith("Service"),
-                                           customerServiceLifetime);
+            services.AddTypeFor(prefixAssemblyName, f => f.Name.EndsWith("Service"), customerServiceLifetime);
+
+            return services;
         }
 
-        private static void AddRegisterAllTypeFor(this IServiceCollection services,
-                                                  Func<Assembly, bool> assemblyCondition,
-                                                  Func<TypeInfo, bool> typeNameCondition,
-                                                  Dictionary<Type, ServiceLifetime> customerServiceLifetime)
+        private static void AddTypeFor(this IServiceCollection services,
+                                       string prefixAssemblyName,
+                                       Func<TypeInfo, bool> typeNameCondition,
+                                       Dictionary<Type, ServiceLifetime> customerServiceLifetime)
         {
-            var assemblies = Reflection.GetAssembliesTypeOf(assemblyCondition, typeNameCondition);
+            var assemblies = Reflection.GetAssembliesTypeOf(prefixAssemblyName, typeNameCondition);
 
             foreach (var @class in assemblies)
             {
@@ -126,7 +126,7 @@ namespace Baymax.Extension
                             lifeTime = customerServiceLifetime[@interface];
                         }
                     }
-                    
+
                     services.Add(new ServiceDescriptor(@interface, @class.AsType(), lifeTime));
                 }
             }
