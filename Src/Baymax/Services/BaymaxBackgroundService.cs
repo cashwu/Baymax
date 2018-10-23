@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Baymax.Extension;
@@ -7,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Timer = System.Timers.Timer;
+
+[assembly: InternalsVisibleTo("Baymax.Tests")]
 
 namespace Baymax.Services
 {

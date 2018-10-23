@@ -23,8 +23,13 @@ namespace Baymax.Extension
             EntityValidation.SetProcessRoutines(typeof(TEntity), checkFunc);
         }
 
-        public static void AddBackgroundService(this IServiceCollection services, params Type[] type)
+        public static IServiceCollection AddBackgroundService(this IServiceCollection services, params Type[] type)
         {
+            if (type.Length == 0)
+            {
+                throw new ArgumentException($"{nameof(type)} is empty");
+            }
+            
             foreach (var t in type)
             {
                 if (t.GetInterfaces().First() != typeof(IBackgroundProcessService))
@@ -35,6 +40,8 @@ namespace Baymax.Extension
                 services.AddScoped(t);
                 services.AddSingleton(typeof(IHostedService), typeof(BaymaxBackgroundService<>).MakeGenericType(t));
             }
+
+            return services;
         }
 
         public static IServiceCollection AddConfig(this IServiceCollection services, IConfiguration configuration, string prefixAssemblyName)
