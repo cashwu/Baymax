@@ -14,9 +14,9 @@
 
 ---
 
-- [Config](#Config)
-- [Log](#Log)
-- [Service](#Service)
+- [Config](#config)
+- [Log](#log)
+- [Service](#service)
 
 ---
  
@@ -160,7 +160,7 @@ public void ConfigureServices(IServiceCollection services)
 建立自定義的 Log 並且實作 ILogBase
 除了 message 和 exception 之外，有多一個 EnvironmentName 的參數可以使用，例如某些特定的環境就不記錄 log
 
-```
+```csharp
 public class SlackLog : ILogBase
 {
     public Task LogAsync(System.Exception ex, string env)
