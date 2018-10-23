@@ -75,13 +75,6 @@ namespace Baymax.Entity
             return _context.Database.ExecuteSqlCommand(sql, parameters);
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-
-            GC.SuppressFinalize(this);
-        }
-
         protected IEnumerable<object> GetEntitiesByState(Func<EntityEntry, bool> predicate)
         {
             return DbContext.ChangeTracker.Entries()
@@ -114,7 +107,14 @@ namespace Baymax.Entity
             }
         }
 
-        protected void Dispose(bool disposing)
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
         {
             if (!disposed && disposing)
             {

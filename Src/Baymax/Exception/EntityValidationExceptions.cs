@@ -10,9 +10,10 @@ namespace Baymax.Exception
     public class EntityValidationException : ValidationException
     {
         protected EntityValidationException(SerializationInfo serializationInfo, StreamingContext streamingContext)
+                : base(serializationInfo, streamingContext)
         {
         }
-        
+
         public EntityValidationException(IEnumerable<ValidationResult> validationResults)
         {
             Exceptions = validationResults.Select(a => new ValidationException(a, null, null)).ToList();
