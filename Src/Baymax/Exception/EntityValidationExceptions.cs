@@ -1,12 +1,20 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace Baymax.Exception
 {
-    public class EntityValidationExceptions : ValidationException
+    [Serializable]
+    public class EntityValidationException : ValidationException
     {
-        public EntityValidationExceptions(IEnumerable<ValidationResult> validationResults)
+        protected EntityValidationException(SerializationInfo serializationInfo, StreamingContext streamingContext)
+                : base(serializationInfo, streamingContext)
+        {
+        }
+
+        public EntityValidationException(IEnumerable<ValidationResult> validationResults)
         {
             Exceptions = validationResults.Select(a => new ValidationException(a, null, null)).ToList();
         }

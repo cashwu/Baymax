@@ -67,11 +67,9 @@ namespace Baymax.Entity.Interface
 
         void Delete(IEnumerable<TEntity> entities);
 
-        IQueryable<TEntity> GetAll();
-        
         IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate = null, bool disableTrack = true);
         
-        IEnumerable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate = null);
+        IEnumerable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate = null, bool disableTrack = true);
 
         bool Any(Expression<Func<TEntity, bool>> predicate);
     }

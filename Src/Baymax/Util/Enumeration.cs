@@ -10,11 +10,11 @@ namespace Baymax.Util
         private readonly int _value;
         private readonly string _displayName;
 
-        public Enumeration()
+        protected Enumeration()
         {
         }
 
-        public Enumeration(int value, string displayName)
+        protected Enumeration(int value, string displayName)
         {
             _value = value;
             _displayName = displayName;
@@ -22,12 +22,12 @@ namespace Baymax.Util
 
         public int Value
         {
-            get { return _value; }
+            get => _value;
         }
 
         public string DisplayName
         {
-            get { return _displayName; }
+            get => _displayName;
         }
 
         public override string ToString()
@@ -96,16 +96,15 @@ namespace Baymax.Util
 
             if (matchingItem == null)
             {
-                var message = string.Format("'{0}' is not a valid {1} in {2}", value, description, typeof(T));
-                throw new ApplicationException(message);
+                throw new ArgumentException($"'{value}' is not a valid {description} in {typeof(T)}");
             }
 
             return matchingItem;
         }
 
-        public int CompareTo(object other)
+        public int CompareTo(object obj)
         {
-            return Value.CompareTo(((Enumeration)other).Value);
+            return Value.CompareTo(((Enumeration) obj).Value);
         }
     }
 }

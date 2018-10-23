@@ -21,7 +21,7 @@ namespace Baymax.Services
         {
             foreach (var log in _logs)
             {
-                if (ex is EntityValidationExceptions validationExceptions)
+                if (ex is EntityValidationException validationExceptions)
                 {
                     foreach (var validationException in validationExceptions.Exceptions)
                     {

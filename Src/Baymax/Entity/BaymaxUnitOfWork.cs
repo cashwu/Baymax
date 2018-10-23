@@ -61,7 +61,7 @@ namespace Baymax.Entity
         public virtual int Commit()
         {
             ValidateObject();
-            
+
             return _context.SaveChanges();
         }
 
@@ -73,13 +73,6 @@ namespace Baymax.Entity
         public virtual int ExecuteSqlCommand(string sql, params object[] parameters)
         {
             return _context.Database.ExecuteSqlCommand(sql, parameters);
-        }
-
-        public virtual void Dispose()
-        {
-            Dispose(true);
-
-            GC.SuppressFinalize(this);
         }
 
         protected IEnumerable<object> GetEntitiesByState(Func<EntityEntry, bool> predicate)
@@ -95,7 +88,7 @@ namespace Baymax.Entity
             {
                 return;
             }
-            
+
             var entities = GetEntitiesByState(a => a.State == EntityState.Added
                                                    || a.State == EntityState.Modified);
 
@@ -109,20 +102,24 @@ namespace Baymax.Entity
 
                 if (results.Any())
                 {
-                    throw new EntityValidationExceptions(results);
+                    throw new EntityValidationException(results);
                 }
             }
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (!disposed && disposing)
             {
-                if (disposing)
-                {
-                    repositories?.Clear();
-                    _context.Dispose();
-                }
+                repositories?.Clear();
+                _context.Dispose();
             }
 
             disposed = true;

@@ -5,29 +5,29 @@ using System.Linq;
 
 namespace Baymax.Entity
 {
-    internal class EntityValidation
+    internal static class EntityValidation
     {
-        private static readonly Dictionary<Type, Func<object, ValidationResult>> _processRoutines =
+        private static readonly Dictionary<Type, Func<object, ValidationResult>> ProcessRoutines =
                 new Dictionary<Type, Func<object, ValidationResult>>();
 
         public static bool AnyProcessRoutines()
         {
-            return _processRoutines.Any();
+            return ProcessRoutines.Any();
         }
 
         public static void SetProcessRoutines(Type t, Func<object, ValidationResult> func)
         {
-            _processRoutines[t] = func;
+            ProcessRoutines[t] = func;
         }
 
         public static void Check(object t, ref List<ValidationResult> validationResults)
         {
-            if (!_processRoutines.ContainsKey(t.GetType()))
+            if (!ProcessRoutines.ContainsKey(t.GetType()))
             {
                 return;
             }
 
-            var validationResult = _processRoutines[t.GetType()].Invoke(t);
+            var validationResult = ProcessRoutines[t.GetType()].Invoke(t);
 
             if (validationResult != null || validationResult != ValidationResult.Success)
             {

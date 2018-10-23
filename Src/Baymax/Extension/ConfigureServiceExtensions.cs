@@ -23,8 +23,13 @@ namespace Baymax.Extension
             EntityValidation.SetProcessRoutines(typeof(TEntity), checkFunc);
         }
 
-        public static void AddBackgroundService(this IServiceCollection services, params Type[] type)
+        public static IServiceCollection AddBackgroundService(this IServiceCollection services, params Type[] type)
         {
+            if (type.Length == 0)
+            {
+                throw new ArgumentException($"{nameof(type)} is empty");
+            }
+            
             foreach (var t in type)
             {
                 if (t.GetInterfaces().First() != typeof(IBackgroundProcessService))
@@ -35,13 +40,15 @@ namespace Baymax.Extension
                 services.AddScoped(t);
                 services.AddSingleton(typeof(IHostedService), typeof(BaymaxBackgroundService<>).MakeGenericType(t));
             }
+
+            return services;
         }
 
         public static IServiceCollection AddConfig(this IServiceCollection services, IConfiguration configuration, string prefixAssemblyName)
         {
             if (configuration == null)
             {
-                throw new ArgumentNullException(nameof(IConfiguration));
+                throw new ArgumentNullException(nameof(configuration));
             }
 
             var types = Reflection.GetAssembliesTypeOf<IConfig>(prefixAssemblyName);
@@ -113,23 +120,31 @@ namespace Baymax.Extension
                         continue;
                     }
 
-                    var lifeTime = ServiceLifetime.Scoped;
-                    if (customerServiceLifetime != null)
-                    {
-                        if (customerServiceLifetime.ContainsKey(@class))
-                        {
-                            lifeTime = customerServiceLifetime[@class];
-                        }
-
-                        if (customerServiceLifetime.ContainsKey(@interface))
-                        {
-                            lifeTime = customerServiceLifetime[@interface];
-                        }
-                    }
+                    var lifeTime = TypeServiceLifetime(customerServiceLifetime, @class, @interface);
 
                     services.Add(new ServiceDescriptor(@interface, @class.AsType(), lifeTime));
                 }
             }
+        }
+
+        private static ServiceLifetime TypeServiceLifetime(Dictionary<Type, ServiceLifetime> customerServiceLifetime, TypeInfo @class, Type @interface)
+        {
+            if (customerServiceLifetime == null)
+            {
+                return ServiceLifetime.Scoped;
+            }
+            
+            if (customerServiceLifetime.ContainsKey(@class))
+            {
+                return customerServiceLifetime[@class];
+            }
+
+            if (customerServiceLifetime.ContainsKey(@interface))
+            {
+                return customerServiceLifetime[@interface];
+            }
+
+            return ServiceLifetime.Scoped;
         }
     }
 }

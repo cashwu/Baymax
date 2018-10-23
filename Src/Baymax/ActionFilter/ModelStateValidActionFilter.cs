@@ -34,6 +34,7 @@ namespace Baymax.ActionFilter
 
         public void OnActionExecuted(ActionExecutedContext context)
         {
+           //Not thing to do 
         }
     }
 }
