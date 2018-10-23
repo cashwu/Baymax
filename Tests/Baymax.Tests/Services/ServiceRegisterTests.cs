@@ -27,13 +27,26 @@ namespace Baymax.Tests.Services
             {
                 { typeof(TestService), ServiceLifetime.Singleton }
             };
-            
+
             var testService = new ServiceCollection()
                               .AddGeneralService("Baymax.Tests", typeLifetimeDic)
                               .BuildServiceProvider()
                               .GetRequiredService<ITestService>();
 
             testService.GetTestMsg().Should().Be("Test");
+        }
+
+        [Fact]
+        public void ArgumentNull()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                  {
+                      new ServiceCollection()
+                              .AddGeneralService(string.Empty);
+                  })
+                  .Message
+                  .Should()
+                  .Contain("prefixAssemblyName");
         }
     }
 

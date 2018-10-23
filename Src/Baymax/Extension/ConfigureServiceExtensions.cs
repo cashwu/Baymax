@@ -27,12 +27,13 @@ namespace Baymax.Extension
         {
             if (type.Length == 0)
             {
-                throw new ArgumentException($"{nameof(type)} is empty");
+                throw new ArgumentNullException($"{nameof(type)}");
             }
             
             foreach (var t in type)
             {
-                if (t.GetInterfaces().First() != typeof(IBackgroundProcessService))
+                var @interface = t.GetInterfaces().FirstOrDefault();
+                if (@interface == null || @interface != typeof(IBackgroundProcessService))
                 {
                     throw new ArgumentException($"Not implement type {nameof(IBackgroundProcessService)}");
                 }
@@ -68,11 +69,6 @@ namespace Baymax.Extension
             }
 
             return services;
-        }
-
-        public static IServiceCollection AddConfig(this IServiceCollection services, IConfiguration configuration)
-        {
-            return services.AddConfig(configuration, string.Empty);
         }
 
         public static IServiceCollection AddLogService(this IServiceCollection services, string prefixAssemblyName = "")
@@ -120,28 +116,18 @@ namespace Baymax.Extension
                         continue;
                     }
 
-                    var lifeTime = TypeServiceLifetime(customerServiceLifetime, @class, @interface);
+                    var lifeTime = TypeServiceLifetime(customerServiceLifetime, @class);
 
                     services.Add(new ServiceDescriptor(@interface, @class.AsType(), lifeTime));
                 }
             }
         }
 
-        private static ServiceLifetime TypeServiceLifetime(Dictionary<Type, ServiceLifetime> customerServiceLifetime, TypeInfo @class, Type @interface)
+        private static ServiceLifetime TypeServiceLifetime(Dictionary<Type, ServiceLifetime> customerServiceLifetime, TypeInfo @class)
         {
-            if (customerServiceLifetime == null)
-            {
-                return ServiceLifetime.Scoped;
-            }
-            
-            if (customerServiceLifetime.ContainsKey(@class))
+            if (customerServiceLifetime != null && customerServiceLifetime.ContainsKey(@class))
             {
                 return customerServiceLifetime[@class];
-            }
-
-            if (customerServiceLifetime.ContainsKey(@interface))
-            {
-                return customerServiceLifetime[@interface];
             }
 
             return ServiceLifetime.Scoped;

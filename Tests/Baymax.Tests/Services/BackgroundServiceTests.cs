@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -32,10 +33,32 @@ namespace Baymax.Tests.Services
             await service.StopAsync(CancellationToken.None);
 
             TestBackgroundService.GetRun().Should().Be(0);
-            
+
             service.Dispose();
         }
-        
+
+        [Fact]
+        public async Task ParamsEmpty()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                  {
+                      new ServiceCollection().AddBackgroundService();
+                  })
+                  .Message.Should()
+                  .Contain("type");
+        }
+
+        [Fact]
+        public async Task NotImplementType()
+        {
+            Assert.Throws<ArgumentException>(() =>
+                  {
+                      new ServiceCollection().AddBackgroundService(typeof(NotImplementType));
+                  })
+                  .Message.Should()
+                  .Be("Not implement type IBackgroundProcessService");
+        }
+
         private IConfiguration GivenConfiguration()
         {
             return new ConfigurationBuilder()
@@ -48,20 +71,24 @@ namespace Baymax.Tests.Services
         }
     }
 
+    public class NotImplementType
+    {
+    }
+
     public class TestBackgroundService : IBackgroundProcessService
     {
         public TestBackgroundService()
         {
             run = 0;
         }
-        
+
         private static int run;
 
         public static int GetRun()
         {
             return run;
         }
-        
+
         public void DoWork()
         {
             run++;
