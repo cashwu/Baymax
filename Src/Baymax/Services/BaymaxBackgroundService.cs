@@ -10,7 +10,7 @@ using Timer = System.Timers.Timer;
 
 namespace Baymax.Services
 {
-    internal class BaymaxBackgroundService<T> : IHostedService, IDisposable where T : IBackgroundProcessService
+    internal sealed class BaymaxBackgroundService<T> : IHostedService, IDisposable where T : IBackgroundProcessService
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly Timer _timer;
@@ -75,8 +75,16 @@ namespace Baymax.Services
 
         public void Dispose()
         {
-            _timer?.Dispose();
+            Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _timer?.Dispose();
+            }
         }
     }
 }

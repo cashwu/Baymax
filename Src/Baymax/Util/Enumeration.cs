@@ -22,12 +22,12 @@ namespace Baymax.Util
 
         public int Value
         {
-            get { return _value; }
+            get => _value;
         }
 
         public string DisplayName
         {
-            get { return _displayName; }
+            get => _displayName;
         }
 
         public override string ToString()
@@ -104,7 +104,7 @@ namespace Baymax.Util
 
         public int CompareTo(object obj)
         {
-            return Value.CompareTo(((Enumeration)obj).Value);
+            return Value.CompareTo(((Enumeration) obj).Value);
         }
     }
 }

@@ -75,7 +75,7 @@ namespace Baymax.Entity
             return _context.Database.ExecuteSqlCommand(sql, parameters);
         }
 
-        public virtual void Dispose()
+        public void Dispose()
         {
             Dispose(true);
 
@@ -114,7 +114,7 @@ namespace Baymax.Entity
             }
         }
 
-        private void Dispose(bool disposing)
+        protected void Dispose(bool disposing)
         {
             if (!disposed && disposing)
             {
