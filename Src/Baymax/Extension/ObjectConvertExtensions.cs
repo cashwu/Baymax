@@ -419,7 +419,7 @@ namespace Baymax.Extension
             }
             else if (me.IsNumeric())
             {
-                result = me.ToDecimal() != decimal.Zero ? true : defaultValue;
+                result = me.ToDecimal() != decimal.Zero || defaultValue;
             }
             else if (me is string)
             {

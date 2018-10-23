@@ -36,7 +36,7 @@ namespace Baymax.Tests.Services
                 new ValidationResult("Id not empty", new List<string> { "Id" })
             };
 
-            var entityValidationException = new EntityValidationExceptions(validationResults);
+            var entityValidationException = new EntityValidationException(validationResults);
 
             GivenRequiredService("Test2").Log(entityValidationException);
         }

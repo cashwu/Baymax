@@ -61,7 +61,7 @@ namespace Baymax.Entity
         public virtual int Commit()
         {
             ValidateObject();
-            
+
             return _context.SaveChanges();
         }
 
@@ -95,7 +95,7 @@ namespace Baymax.Entity
             {
                 return;
             }
-            
+
             var entities = GetEntitiesByState(a => a.State == EntityState.Added
                                                    || a.State == EntityState.Modified);
 
@@ -109,20 +109,17 @@ namespace Baymax.Entity
 
                 if (results.Any())
                 {
-                    throw new EntityValidationExceptions(results);
+                    throw new EntityValidationException(results);
                 }
             }
         }
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (!disposed && disposing)
             {
-                if (disposing)
-                {
-                    repositories?.Clear();
-                    _context.Dispose();
-                }
+                repositories?.Clear();
+                _context.Dispose();
             }
 
             disposed = true;

@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace Baymax.Exception
 {
-    public class EntityValidationExceptions : ValidationException
+    public class EntityValidationException : ValidationException
     {
-        public EntityValidationExceptions(IEnumerable<ValidationResult> validationResults)
+        public EntityValidationException(IEnumerable<ValidationResult> validationResults)
         {
             Exceptions = validationResults.Select(a => new ValidationException(a, null, null)).ToList();
         }

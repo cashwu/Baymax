@@ -41,7 +41,7 @@ namespace Baymax.Extension
         {
             if (configuration == null)
             {
-                throw new ArgumentNullException(nameof(IConfiguration));
+                throw new ArgumentNullException(nameof(configuration));
             }
 
             var types = Reflection.GetAssembliesTypeOf<IConfig>(prefixAssemblyName);
@@ -113,23 +113,31 @@ namespace Baymax.Extension
                         continue;
                     }
 
-                    var lifeTime = ServiceLifetime.Scoped;
-                    if (customerServiceLifetime != null)
-                    {
-                        if (customerServiceLifetime.ContainsKey(@class))
-                        {
-                            lifeTime = customerServiceLifetime[@class];
-                        }
-
-                        if (customerServiceLifetime.ContainsKey(@interface))
-                        {
-                            lifeTime = customerServiceLifetime[@interface];
-                        }
-                    }
+                    var lifeTime = TypeServiceLifetime(customerServiceLifetime, @class, @interface);
 
                     services.Add(new ServiceDescriptor(@interface, @class.AsType(), lifeTime));
                 }
             }
+        }
+
+        private static ServiceLifetime TypeServiceLifetime(Dictionary<Type, ServiceLifetime> customerServiceLifetime, TypeInfo @class, Type @interface)
+        {
+            if (customerServiceLifetime == null)
+            {
+                return ServiceLifetime.Scoped;
+            }
+            
+            if (customerServiceLifetime.ContainsKey(@class))
+            {
+                return customerServiceLifetime[@class];
+            }
+
+            if (customerServiceLifetime.ContainsKey(@interface))
+            {
+                return customerServiceLifetime[@interface];
+            }
+
+            return ServiceLifetime.Scoped;
         }
     }
 }

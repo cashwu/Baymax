@@ -239,17 +239,15 @@ namespace Baymax.Entity
             _dbSet.RemoveRange(entities);
         }
 
-        public IQueryable<TEntity> GetAll()
+        public virtual IEnumerable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate = null, bool disableTrack = true)
         {
             IQueryable<TEntity> query = _dbSet;
+
+            if (disableTrack)
+            {
+                query.AsNoTracking();
+            }
             
-            return query.AsNoTracking();
-        }
-
-        public virtual IEnumerable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate = null)
-        {
-            IQueryable<TEntity> query = _dbSet;
-
             if (predicate != null)
             {
                 query = query.Where(predicate);
@@ -258,7 +256,7 @@ namespace Baymax.Entity
             return query.Select(selector);
         }
 
-        public virtual IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate, bool disableTrack = true)
+        public virtual IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate = null, bool disableTrack = true)
         {
             IQueryable<TEntity> query = _dbSet;
 
@@ -267,7 +265,12 @@ namespace Baymax.Entity
                 query.AsNoTracking();
             }
 
-            return query.Where(predicate);
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return query;
         }
 
         public virtual bool Any(Expression<Func<TEntity, bool>> predicate)

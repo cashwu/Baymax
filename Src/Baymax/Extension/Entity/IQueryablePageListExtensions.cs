@@ -11,10 +11,7 @@ namespace Baymax.Extension.Entity
     {
         public static async Task<IPagedList<T>> ToPagedListAsync<T>(this IQueryable<T> source, int pageIndex, int pageSize, int indexFrom = 0, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (indexFrom > pageIndex)
-            {
-                throw new ArgumentException($"indexFrom: {indexFrom} > pageIndex: {pageIndex}, must indexFrom <= pageIndex");
-            }
+            ValidationIndex(pageIndex, indexFrom);
 
             var count = await source.CountAsync(cancellationToken).ConfigureAwait(false);
             var items = await source.Skip((pageIndex - indexFrom) * pageSize)
@@ -31,6 +28,14 @@ namespace Baymax.Extension.Entity
             };
 
             return pagedList;
+        }
+
+        private static void ValidationIndex(int pageIndex, int indexFrom)
+        {
+            if (indexFrom > pageIndex)
+            {
+                throw new ArgumentException($"indexFrom: {indexFrom} > pageIndex: {pageIndex}, must indexFrom <= pageIndex");
+            }
         }
     }
 }

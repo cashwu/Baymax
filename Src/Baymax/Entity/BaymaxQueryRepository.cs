@@ -9,13 +9,12 @@ namespace Baymax.Entity
 {
     public class BaymaxQueryRepository<TEntity> : IBaymaxQueryRepository<TEntity> where TEntity : QueryEntity
     {
-        private readonly DbContext _dbContext;
         private readonly DbQuery<TEntity> _dbQuery;
 
         public BaymaxQueryRepository(DbContext dbContext)
         {
-            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _dbQuery = _dbContext.Query<TEntity>();
+            var db = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _dbQuery = db.Query<TEntity>();
         }
 
         public IEnumerable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate = null)
