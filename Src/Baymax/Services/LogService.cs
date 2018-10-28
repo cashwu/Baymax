@@ -7,13 +7,10 @@ namespace Baymax.Services
 {
     internal class LogService : ILogService
     {
-        private readonly IHostingEnvironment _env;
         private readonly IEnumerable<ILogBase> _logs;
 
-        public LogService(IHostingEnvironment env,
-                          IEnumerable<ILogBase> logs)
+        public LogService(IEnumerable<ILogBase> logs)
         {
-            _env = env;
             _logs = logs;
         }
 
@@ -25,12 +22,12 @@ namespace Baymax.Services
                 {
                     foreach (var validationException in validationExceptions.Exceptions)
                     {
-                        log.LogAsync(validationException, _env.EnvironmentName);
+                        log.LogAsync(validationException);
                     }
                 }
                 else
                 {
-                    log.LogAsync(ex, _env.EnvironmentName);
+                    log.LogAsync(ex);
                 }
             }
         }
@@ -39,7 +36,7 @@ namespace Baymax.Services
         {
             foreach (var log in _logs)
             {
-                log.LogAsync(msg, _env.EnvironmentName);
+                log.LogAsync(msg);
             }
         }
     }

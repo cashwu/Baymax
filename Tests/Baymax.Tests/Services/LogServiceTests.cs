@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using Baymax.Exception;
 using Baymax.Extension;
@@ -18,13 +19,19 @@ namespace Baymax.Tests.Services
         [Fact]
         public void DefaultLogRegister()
         {
-            GivenRequiredService("Test").Log("abc");
+            GivenRequiredService().Log("abc");
+
+            TestLog.GetMessage().Should().Be("abc");
         }
 
         [Fact]
         public void NormalExceptionLogRegister()
         {
-            GivenRequiredService("Test").Log(new ArgumentException("Test Argument Exception"));
+            GivenRequiredService().Log(new ArgumentException("Test Argument Exception"));
+
+            var ex = TestLog.GetException().First();
+            ex.Should().BeOfType<ArgumentException>();
+            ex.As<ArgumentException>().Message.Should().Be("Test Argument Exception");
         }
 
         [Fact]
@@ -38,14 +45,21 @@ namespace Baymax.Tests.Services
 
             var entityValidationException = new EntityValidationException(validationResults);
 
-            GivenRequiredService("Test2").Log(entityValidationException);
+            GivenRequiredService().Log(entityValidationException);
+
+            var ex = TestLog.GetException();
+            ex[0].Should().BeOfType<ValidationException>();
+            ex[0].As<ValidationException>().Message.Should().Be("Name not empty");
+
+            ex[1].Should().BeOfType<ValidationException>();
+            ex[1].As<ValidationException>().Message.Should().Be("Id not empty");
         }
 
-        private ILogService GivenRequiredService(string environmentName)
+        private ILogService GivenRequiredService()
         {
             return new ServiceCollection()
                    .AddLogService("Baymax.Tests")
-                   .AddSingleton<IHostingEnvironment>(new HostingEnvironment { EnvironmentName = environmentName })
+                   // .AddSingleton<IHostingEnvironment>(new HostingEnvironment { EnvironmentName = environmentName })
                    .BuildServiceProvider()
                    .GetRequiredService<ILogService>();
         }
@@ -53,50 +67,35 @@ namespace Baymax.Tests.Services
 
     public class TestLog : ILogBase
     {
-        public Task LogAsync(System.Exception ex, string env)
-        {
-            if (string.Equals(env, "Test"))
-            {
-                ex.Should().BeOfType<ArgumentException>();
-                ex.As<ArgumentException>().Message.Should().Be("Test Argument Exception");
-                return Task.CompletedTask;
-            }
+        private static List<System.Exception> exceptions;
+        private static string msg;
 
-            ex.Should().BeOfType<ValidationException>();
-            ex.As<ValidationException>().Message.Contains("not empty").Should().BeTrue();
+        public TestLog()
+        {
+            exceptions = new List<System.Exception>();     
+        }
+        
+        public static List<System.Exception> GetException()
+        {
+            return exceptions;
+        }
+
+        public static string GetMessage()
+        {
+            return msg;
+        }
+
+        public Task LogAsync(System.Exception ex)
+        {
+            exceptions.Add(ex);
 
             return Task.CompletedTask;
         }
 
-        public Task LogAsync(string msg, string env)
+        public Task LogAsync(string msg)
         {
-            msg.Should().Be("abc");
-            env.Should().Be("Test");
-            return Task.CompletedTask;
-        }
-    }
+            TestLog.msg = msg;
 
-    public class TestLog2 : ILogBase
-    {
-        public Task LogAsync(System.Exception ex, string env)
-        {
-            if (string.Equals(env, "Test"))
-            {
-                ex.Should().BeOfType<ArgumentException>();
-                ex.As<ArgumentException>().Message.Should().Be("Test Argument Exception");
-                return Task.CompletedTask;
-            }
-
-            ex.Should().BeOfType<ValidationException>();
-            ex.As<ValidationException>().Message.Contains("not empty").Should().BeTrue();
-
-            return Task.CompletedTask;
-        }
-
-        public Task LogAsync(string msg, string env)
-        {
-            msg.Should().Be("abc");
-            env.Should().Be("Test");
             return Task.CompletedTask;
         }
     }

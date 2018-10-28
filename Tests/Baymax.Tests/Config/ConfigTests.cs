@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Baymax.Extension;
@@ -54,9 +55,21 @@ namespace Baymax.Tests.Config
                             Id = 3,
                             Name = "CC"
                         }
-                    }.ToExpectedObject().ShouldEqual(config);
+                    }.ToExpectedObject()
+                     .ShouldEqual(config);
         }
 
+        [Fact]
+        public void ArgumentNull()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+                  {
+                      new ServiceCollection().AddConfig(null, "Baymax.Tests");
+                  })
+                  .Message.Should()
+                  .Contain("configuration");
+        } 
+        
         private IConfiguration GivenConfiguration()
         {
             return new ConfigurationBuilder()

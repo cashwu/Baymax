@@ -10,15 +10,15 @@ namespace Baymax.Util
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new ArgumentNullException(value);
+                throw new ArgumentNullException(nameof(value));
             }
             
             if (string.IsNullOrWhiteSpace(salt))
             {
-                throw new ArgumentNullException(salt);
+                throw new ArgumentNullException(nameof(salt));
             }
 
-            byte[] hashBytes = KeyDerivation.Pbkdf2(password: value,
+            var hashBytes = KeyDerivation.Pbkdf2(password: value,
                                                     salt: Encoding.UTF8.GetBytes(salt),
                                                     prf: KeyDerivationPrf.HMACSHA512,
                                                     iterationCount: 100000,

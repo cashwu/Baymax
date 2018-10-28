@@ -4,8 +4,8 @@ namespace Baymax.Services.Interface
 {
     public interface ILogBase
     {
-        Task LogAsync(System.Exception ex, string env);
+        Task LogAsync(System.Exception ex);
 
-        Task LogAsync(string msg, string env);
+        Task LogAsync(string msg);
     }
 }

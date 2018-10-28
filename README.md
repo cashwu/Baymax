@@ -43,6 +43,15 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
+如果要指定特別的 Assemble 的話，可以傳入 Assembly 的 prefix 當參數
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddConfig(Configuration, "Baymax");
+}
+```
+
 ### 單一物件
 
 新增一個類別實作 `IConfig`，並且加上 `ConfigSection` attribute，
@@ -240,7 +249,8 @@ public void ConfigureServices(IServiceCollection services)
 
 ### 註冊自定義型別的生命周期 
 
-預設注入 Service 的生命周期為 Scope，如果需要修改的話，請傳入第二個參數 Dictionary<Type, ServiceLifetime>
+預設注入 Service 的生命周期為 Scope，如果需要修改的話，請傳入第二個參數 Dictionary<Type, ServiceLifetime>，
+KEY 為 Service class 的 Type，VALUE 為 ServiceLifetime
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
@@ -302,7 +312,7 @@ public class TestBackgroundService : IBackgroundProcessService
 ### Config 
 
 在 config 裡面新增一個 BackgroundService 的區段，裡面的 KEY 就是實作 IBackgroundProcessService 的類別名稱加上 Interval，
-Value 就是需要定期執行的周期
+VALUE 就是需要定期執行的周期
 
 > 注意單位為 `毫秒`，以下面的程式為例就是 1 秒會執行一次
 
