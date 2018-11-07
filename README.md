@@ -393,11 +393,11 @@ public class Person : BaseEntity
 
 ### 建立 UnitOfWork
 
-建立 UnitOfWork interface 並且實作 IBaymaxUnitOfWork
+建立 UnitOfWork interface 並且實作 IBaymaxUnitOfWork 然後把自己實作的 DbContext 當泛型參數傳入 
 
 ```csharp
 
-public interface IAppUnitOfWork : IBaymaxUnitOfWork<TestDbContext>
+public interface IAppUnitOfWork : IBaymaxUnitOfWork<AppDbContext>
 {
 }
 ```
