@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -53,7 +52,7 @@ namespace Baymax.Tests.Entity
         }
 
         [Fact]
-        public void Repository_Insert()
+        public async Task Repository_Insert()
         {
             var repo = _unitOfWork.GetRepository<Person>();
 
@@ -67,11 +66,11 @@ namespace Baymax.Tests.Entity
                 new Person { Id = 5, Name = "e" }
             });
 
-            repo.InsertAsync(new Person { Id = 6, Name = "f" });
+            await repo.InsertAsync(new Person { Id = 6, Name = "f" });
 
-            repo.InsertAsync(new Person { Id = 7, Name = "g" }, new Person { Id = 8, Name = "h" });
+            await repo.InsertAsync(new Person { Id = 7, Name = "g" }, new Person { Id = 8, Name = "h" });
 
-            repo.InsertAsync(new List<Person>
+            await repo.InsertAsync(new List<Person>
             {
                 new Person { Id = 9, Name = "i" },
                 new Person { Id = 10, Name = "j" }
@@ -341,12 +340,63 @@ namespace Baymax.Tests.Entity
                                     .FirstOrDefault();
 
             person.Id.Should().Be(1);
-            
+
             person = _unitOfWork.GetRepository<Person>()
-                                    .FromSql("select * from Person where id = @id", new SqliteParameter("id", 1))
-                                    .FirstOrDefault();
+                                .FromSql("select * from Person where id = @id", new SqliteParameter("id", 1))
+                                .FirstOrDefault();
 
             person.Id.Should().Be(1);
+        }
+
+        [Fact]
+        public void Repository_Update()
+        {
+            GivenPersonData();
+
+            var repo = _unitOfWork.GetRepository<Person>();
+            var person = repo.GetFirstOrDefault(predicate: a => a.Id == 1, disableTracking: false);
+
+            person.Name = "123";
+            repo.Update(person);
+            _unitOfWork.Commit();
+
+            var p = repo.GetFirstOrDefault(predicate: a => a.Id == 1);
+
+            new Person { Id = 1, Name = "123" }.ToExpectedObject().ShouldEqual(p);
+
+            var persons = repo.GetAll(predicate: a => a.Id > 1, disableTracking: false).ToList();
+
+            persons[0].Name = "222";
+            persons[1].Name = "333";
+
+            repo.Update(persons);
+            _unitOfWork.Commit();
+
+            var ps = repo.GetAll(predicate: a => a.Id > 1).ToList();
+
+            new List<Person>
+                    {
+                        new Person { Id = 2, Name = "222" },
+                        new Person { Id = 3, Name = "333" }
+                    }.ToExpectedObject()
+                     .ShouldEqual(ps);
+
+            var persons2 = repo.GetAll(predicate: a => a.Id > 1, disableTracking: false).ToList();
+
+            persons2[0].Name = "999";
+            persons2[1].Name = "888";
+
+            repo.Update(persons2[0], persons2[1]);
+            _unitOfWork.Commit();
+
+            var ps2 = repo.GetAll(predicate: a => a.Id > 1).ToList();
+
+            new List<Person>
+                    {
+                        new Person { Id = 2, Name = "999" },
+                        new Person { Id = 3, Name = "888" }
+                    }.ToExpectedObject()
+                     .ShouldEqual(ps2);
         }
 
         private void GivenPersonData()

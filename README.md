@@ -473,22 +473,6 @@ public class IndexController : Controller
 
 > 實作了 Repository Pattern，並且封裝了一些對 Entity 的操作，需搭配上述的 UnitOfWork 使用
 
-### Insert & InsertAsync
-
-有三個多載，可以傳入單一 Entity 和 多筆 Entity 或是一個集合 (Async 方法使用相同)
-
-```csharp
-    repo.Insert(new Person { Id = 1, Name = "a" });
-
-    repo.Insert(new Person { Id = 2, Name = "b" }, new Person { Id = 3, Name = "c" });
-
-    repo.Insert(new List<Person>
-    {
-        new Person { Id = 4, Name = "d" },
-        new Person { Id = 5, Name = "e" }
-    });
-```
-
 ### GetFirstOrDefault & GetFirstOrDefaultAsync
 
 有兩個多載，主要的不同是返回物件是不是同一個 Entity，傳入參數如下 (Async 方法使用相同)
@@ -616,9 +600,39 @@ PageIndex 從 0 開始，預設 PageSize 為 20
     repo.FromSql("select * from Person where id = @id", new SqlParameter("id", 1));
 ```
 
+### Insert & InsertAsync
 
+有三個多載，可以傳入單一 Entity 和 多筆 Entity 或是一個集合 (Async 方法使用相同)
 
+```csharp
+    repo.Insert(new Person { Id = 1, Name = "a" });
 
+    repo.Insert(new Person { Id = 2, Name = "b" }, new Person { Id = 3, Name = "c" });
+
+    repo.Insert(new List<Person>
+    {
+        new Person { Id = 4, Name = "d" },
+        new Person { Id = 5, Name = "e" }
+    });
+```
+
+### Update 
+
+有三個多載，可以傳入單一 Entity 和 多筆 Entity 或是一個集合 
+
+```csharp
+    
+    var persons = repo.GetAll();
+    
+    persons[0].Name = "123";
+    persons[1].Name = "456";
+    
+    repo.Update(persons[0]);
+
+    repo.Update(persons[0], person[1]);
+
+    repo.Insert(persons);
+```
 
 
 
