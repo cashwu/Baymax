@@ -18,6 +18,7 @@
 - [Log](#log)
 - [Service](#service)
 - [BackgroundService](#backgroundservice)
+- [UnitOfWork & Repository](#unitofwork)
 
 ---
  
@@ -352,11 +353,111 @@ public void ConfigureServices(IServiceCollection services)
 
 ---
 
+## UnitOfWork
 
+> 實作了 UnitOfWork 和 Repository Pattern，並且封裝了一些對 db context 的操作
 
+### 建立 DBContext 
 
+基本上跟一般在使用的 DBContext 一樣，只是 DbSet 的 class 必需繼承 BaseEntity， DbQuery 的 class 必需繼承 QueryEntity，
+這樣子才可以被 UnitOfWork 和 Repository 使用 
 
+```csharp
 
+public class AppDbContext : DbContext
+{
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+            : base(options)
+    {
+    }
+
+    public DbSet<Person> Person { get; set; }
+    
+    public DbQuery<PersonView> PersonView { get; set; }
+}
+
+public class PersonView : QueryEntity
+{
+    public int Id { get; set; }
+    
+    public string Name { get; set; }
+}
+
+public class Person : BaseEntity
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; }
+}
+```
+
+### 建立 UnitOfWork
+
+建立 UnitOfWork interface 並且實作 IBaymaxUnitOfWork 然後把自己實作的 DbContext 當泛型參數傳入 
+
+```csharp
+
+public interface IAppUnitOfWork : IBaymaxUnitOfWork<AppDbContext>
+{
+}
+```
+
+建立 UnitOfWork class 並且繼承 BaymaxUnitOfWork 和實作自己的 IUnitOfWork，
+並把自己實作的 DbContext 當泛型參數傳入 BaymaxUnitOfWork 和 constructor 注入
+
+```csharp
+
+public class AppUnitOfWork : BaymaxUnitOfWork<AppDbContext>, IAppUnitOfWork
+{
+    public AppUnitOfWork(AppDbContext context)
+            : base(context)
+    {
+    }
+}
+```
+
+### 註冊
+
+在 service 註冊自己的 UnitOfWork 為 Scoped (強烈建議註冊為 Scoped)
+
+```csharp
+
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddScoped<IAppUnitOfWork, AppUnitOfWork>()
+}
+```
+
+### 使用
+
+注入 UnitOfWork 
+
+```csharp
+public class IndexController : Controller
+{
+    public IndexController(IAppUnitOfWork unitOfWork){ ... }
+}   
+```
+
+使用 DbContext 就可以拿到 DbContext 的實體 
+
+```csharp
+    var db = unitOfWork.DbContext; 
+```
+
+使用 GetRepository 並傳入 DbSet 的 class 當泛型參數就可以拿到 IBaymaxRepository<>
+
+```csharp
+    var repo = unitOfWork.GetRepository<Person>();
+```
+
+使用 GetViewRepository 並傳入 DbQuery 的 class 當泛型參數就可以拿到 IBaymaxQueryRepository<>  
+
+```csharp
+    var repoView = unitOfWork.GetViewRepository<PersonView>();
+```
+
+> 需注意如果 DbSet 和 DbQuery 的 class 沒有繼承相對應的 class 在裡會報錯
 
 
 
