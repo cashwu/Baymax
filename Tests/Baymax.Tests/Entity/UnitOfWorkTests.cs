@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Baymax.Entity.Interface;
 using ExpectedObjects;
 using FluentAssertions;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -21,11 +22,17 @@ namespace Baymax.Tests.Entity
             _unitOfWork = new ServiceCollection()
                           .AddDbContext<TestDbContext>(options =>
                           {
-                              options.UseInMemoryDatabase(Guid.NewGuid().ToString());
+                              // options.UseInMemoryDatabase(Guid.NewGuid().ToString());
+                              options.UseSqlite("DataSource=:memory:", x =>
+                              {
+                              });
                           })
                           .AddScoped<ITestUnitOfWork, TestUnitOfWork>()
                           .BuildServiceProvider()
                           .GetRequiredService<ITestUnitOfWork>();
+
+            _unitOfWork.DbContext.Database.OpenConnection();
+            _unitOfWork.DbContext.Database.EnsureCreated();
         }
 
         [Fact]
@@ -311,7 +318,7 @@ namespace Baymax.Tests.Entity
             count = _unitOfWork.GetRepository<Person>().Count(a => a.Id > 1);
             count.Should().Be(2);
         }
-        
+
         [Fact]
         public void Repository_Any()
         {
@@ -322,6 +329,24 @@ namespace Baymax.Tests.Entity
 
             count = _unitOfWork.GetRepository<Person>().Any(a => a.Id > 10);
             count.Should().BeFalse();
+        }
+
+        [Fact]
+        public void Repository_FromSql()
+        {
+            GivenPersonData();
+
+            var person = _unitOfWork.GetRepository<Person>()
+                                    .FromSql($"select * from Person where id = {1}")
+                                    .FirstOrDefault();
+
+            person.Id.Should().Be(1);
+            
+            person = _unitOfWork.GetRepository<Person>()
+                                    .FromSql("select * from Person where id = @id", new SqliteParameter("id", 1))
+                                    .FirstOrDefault();
+
+            person.Id.Should().Be(1);
         }
 
         private void GivenPersonData()

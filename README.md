@@ -606,7 +606,15 @@ PageIndex 從 0 開始，預設 PageSize 為 20
     repo.Any(a => a.Id > 1);
 ```
 
+### FromSql
 
+原始 SQL 語句，可以使用字串內插的方式或是使用 Parameter 的方式傳參數
+
+```csharp
+    repo.FromSql($"select * from Person where id = {1}");
+
+    repo.FromSql("select * from Person where id = @id", new SqlParameter("id", 1));
+```
 
 
 
