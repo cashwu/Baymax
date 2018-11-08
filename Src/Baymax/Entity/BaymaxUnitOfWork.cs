@@ -13,8 +13,8 @@ namespace Baymax.Entity
     public class BaymaxUnitOfWork<TDbContext> : IBaymaxUnitOfWork<TDbContext> where TDbContext : DbContext
     {
         private readonly TDbContext _context;
-        private Dictionary<Type, object> repositories;
-        private bool disposed;
+        private Dictionary<Type, object> _repositories;
+        private bool _disposed;
 
         public BaymaxUnitOfWork(TDbContext context)
         {
@@ -28,34 +28,34 @@ namespace Baymax.Entity
 
         public virtual IBaymaxRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
         {
-            if (repositories == null)
+            if (_repositories == null)
             {
-                repositories = new Dictionary<Type, object>();
+                _repositories = new Dictionary<Type, object>();
             }
 
             var type = typeof(TEntity);
-            if (!repositories.ContainsKey(type))
+            if (!_repositories.ContainsKey(type))
             {
-                repositories[type] = new BaymaxRepository<TEntity>(_context);
+                _repositories[type] = new BaymaxRepository<TEntity>(_context);
             }
 
-            return (IBaymaxRepository<TEntity>) repositories[type];
+            return (IBaymaxRepository<TEntity>) _repositories[type];
         }
 
         public virtual IBaymaxQueryRepository<TEntity> GetViewRepository<TEntity>() where TEntity : QueryEntity
         {
-            if (repositories == null)
+            if (_repositories == null)
             {
-                repositories = new Dictionary<Type, object>();
+                _repositories = new Dictionary<Type, object>();
             }
 
             var type = typeof(TEntity);
-            if (!repositories.ContainsKey(type))
+            if (!_repositories.ContainsKey(type))
             {
-                repositories[type] = new BaymaxQueryRepository<TEntity>(_context);
+                _repositories[type] = new BaymaxQueryRepository<TEntity>(_context);
             }
 
-            return (IBaymaxQueryRepository<TEntity>) repositories[type];
+            return (IBaymaxQueryRepository<TEntity>) _repositories[type];
         }
 
         public virtual int Commit()
@@ -116,13 +116,13 @@ namespace Baymax.Entity
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposed && disposing)
+            if (!_disposed && disposing)
             {
-                repositories?.Clear();
+                _repositories?.Clear();
                 _context.Dispose();
             }
 
-            disposed = true;
+            _disposed = true;
         }
     }
 }

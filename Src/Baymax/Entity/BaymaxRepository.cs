@@ -15,13 +15,16 @@ namespace Baymax.Entity
 {
     public class BaymaxRepository<TEntity> : IBaymaxRepository<TEntity> where TEntity : BaseEntity
     {
-        private readonly DbContext _dbContext;
         private readonly DbSet<TEntity> _dbSet;
 
         public BaymaxRepository(DbContext dbContext)
         {
-            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _dbSet = _dbContext.Set<TEntity>();
+            if (dbContext == null)
+            {
+                throw new ArgumentNullException(nameof(dbContext));
+            }
+
+            _dbSet = dbContext.Set<TEntity>();
         }
 
         public virtual IPagedList<TEntity> GetPagedList(Expression<Func<TEntity, bool>> predicate = null,
