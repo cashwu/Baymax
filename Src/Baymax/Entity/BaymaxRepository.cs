@@ -9,7 +9,6 @@ using Baymax.Entity.Interface;
 using Baymax.Extension.Entity;
 using Baymax.Util;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Query;
 
 namespace Baymax.Entity
@@ -23,14 +22,6 @@ namespace Baymax.Entity
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _dbSet = _dbContext.Set<TEntity>();
-        }
-
-        public virtual void ChangeTable(string table)
-        {
-            if (_dbContext.Model.FindEntityType(typeof(TEntity)).Relational() is RelationalEntityTypeAnnotations relational)
-            {
-                relational.TableName = table;
-            }
         }
 
         public virtual IPagedList<TEntity> GetPagedList(Expression<Func<TEntity, bool>> predicate = null,
@@ -85,6 +76,23 @@ namespace Baymax.Entity
             return query.Select(selector).ToPagedListAsync(pageIndex, pageSize, cancellationToken: cancellationToken);
         }
 
+        public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate = null,
+                                          Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+                                          Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
+                                          bool disableTracking = true)
+        {
+            return GetBaseQuery(predicate, orderBy, include, disableTracking);
+        }
+
+        public IQueryable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector,
+                                                   Expression<Func<TEntity, bool>> predicate = null,
+                                                   Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+                                                   Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
+                                                   bool disableTracking = true)
+        {
+            return GetBaseQuery(predicate, orderBy, include, disableTracking).Select(selector);
+        }
+
         public virtual TEntity GetFirstOrDefault(Expression<Func<TEntity, bool>> predicate = null,
                                                  Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
                                                  Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
@@ -127,16 +135,6 @@ namespace Baymax.Entity
             return query.FirstOrDefaultAsync();
         }
 
-        public virtual IQueryable<TEntity> FromSql(RawSqlString sql, params object[] parameters)
-        {
-            return _dbSet.FromSql(sql, parameters);
-        }
-
-        public IQueryable<TEntity> FromSql(FormattableString sql)
-        {
-            return _dbSet.FromSql(sql);
-        }
-
         public virtual TEntity Find(params object[] keyValues)
         {
             return _dbSet.Find(keyValues);
@@ -154,7 +152,22 @@ namespace Baymax.Entity
 
         public virtual int Count(Expression<Func<TEntity, bool>> predicate = null)
         {
-            return _dbSet.Count(predicate);
+            return predicate == null ? _dbSet.Count() : _dbSet.Count(predicate);
+        }
+
+        public virtual bool Any(Expression<Func<TEntity, bool>> predicate = null)
+        {
+            return predicate == null ? _dbSet.Any() : _dbSet.Any(predicate);
+        }
+
+        public virtual IQueryable<TEntity> FromSql(RawSqlString sql, params object[] parameters)
+        {
+            return _dbSet.FromSql(sql, parameters);
+        }
+
+        public IQueryable<TEntity> FromSql(FormattableString sql)
+        {
+            return _dbSet.FromSql(sql);
         }
 
         public virtual void Insert(TEntity entity)
@@ -208,24 +221,12 @@ namespace Baymax.Entity
             _dbSet.Remove(entity);
         }
 
-        public virtual void Delete(object id)
+        public virtual void Delete(params object[] keyValues)
         {
-            var typeInfo = typeof(TEntity).GetTypeInfo();
-            var key = _dbContext.Model.FindEntityType(typeInfo).FindPrimaryKey().Properties.FirstOrDefault();
-            var property = typeInfo.GetProperty(key?.Name);
-            if (property != null)
+            var entity = _dbSet.Find(keyValues);
+            if (entity != null)
             {
-                var entity = Activator.CreateInstance<TEntity>();
-                property.SetValue(entity, id);
-                _dbContext.Entry(entity).State = EntityState.Deleted;
-            }
-            else
-            {
-                var entity = _dbSet.Find(id);
-                if (entity != null)
-                {
-                    Delete(entity);
-                }
+                Delete(entity);
             }
         }
 
@@ -237,45 +238,6 @@ namespace Baymax.Entity
         public virtual void Delete(IEnumerable<TEntity> entities)
         {
             _dbSet.RemoveRange(entities);
-        }
-
-        public virtual IEnumerable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate = null, bool disableTrack = true)
-        {
-            IQueryable<TEntity> query = _dbSet;
-
-            if (disableTrack)
-            {
-                query.AsNoTracking();
-            }
-            
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            return query.Select(selector);
-        }
-
-        public virtual IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate = null, bool disableTrack = true)
-        {
-            IQueryable<TEntity> query = _dbSet;
-
-            if (disableTrack)
-            {
-                query.AsNoTracking();
-            }
-
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            return query;
-        }
-
-        public virtual bool Any(Expression<Func<TEntity, bool>> predicate)
-        {
-            return _dbSet.Any(predicate);
         }
 
         private IQueryable<TEntity> GetBaseQuery(Expression<Func<TEntity, bool>> predicate,

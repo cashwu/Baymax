@@ -70,7 +70,7 @@ namespace Baymax.Entity.Interface
             }
         }
 
-        internal PagedList() => Items = new T[0];
+        public PagedList() => Items = new T[0];
     }
 
     internal class PagedList<TSource, TResult> : IPagedList<TResult>

@@ -18,7 +18,8 @@
 - [Log](#log)
 - [Service](#service)
 - [BackgroundService](#backgroundservice)
-- [UnitOfWork & Repository](#unitofwork)
+- [UnitOfWork](#unitofwork)
+- [Repository](#repository)
 
 ---
  
@@ -355,7 +356,7 @@ public void ConfigureServices(IServiceCollection services)
 
 ## UnitOfWork
 
-> 實作了 UnitOfWork 和 Repository Pattern，並且封裝了一些對 db context 的操作
+> 實作了 UnitOfWork Pattern
 
 ### 建立 DBContext 
 
@@ -428,7 +429,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-### 使用
+### 取得 Repository 
 
 注入 UnitOfWork 
 
@@ -459,6 +460,208 @@ public class IndexController : Controller
 
 > 需注意如果 DbSet 和 DbQuery 的 class 沒有繼承相對應的 class 在裡會報錯
 
+### Commit
+
+原本 DBContext 的 SaveChange，有同步和非同步的方法
+
+```csharp
+    unitOfWork.Commit();
+    unitOfWork.CommitAsync();
+```
+
+### ExecuteSqlCommand
+
+UnitOfWork 可以直接執行原始 SQL 語句，可以使用字串內插的方式或是使用 Parameter 的方式傳參數
+
+```csharp
+    unitOfWork.ExecuteSqlCommand($"delete from Phone where id = {1}");
+
+    unitOfWork.ExecuteSqlCommand("delete from Phone where id = @id", new SqlParameter("id", 1));
+```
+
+## Repository
+
+> 實作了 Repository Pattern，並且封裝了一些對 Entity 的操作，需搭配上述的 UnitOfWork 使用
+
+### GetFirstOrDefault & GetFirstOrDefaultAsync
+
+有兩個多載，主要的不同是返回物件是不是同一個 Entity，傳入參數如下 (Async 方法使用相同)
+
+- Expression<Func<TEntity, TResult>> selector (兩個多載主要差在這個參數)
+- Expression<Func<TEntity, bool>> predicate = null
+- Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null
+- Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null
+- bool disableTracking = true
+
+基本上所有的參數都有預設值 (selector 除外)，建議使用具名引數的方式來呼叫
+
+```csharp
+  repo.GetFirstOrDefault(selector: a => a.Name,
+                         predicate: a => a.Id == 2,
+                         orderBy: a => a.OrderBy(b => b.Id),
+                         include: a => a.Include(b => b.Phones),
+                         disableTracking: true);
+                         
+  repo.GetFirstOrDefault(predicate: a => a.Id == 1,
+                         orderBy: a => a.OrderBy(b => b.Id),
+                         include: a => a.Include(b => b.Phones),
+                         disableTracking: true);
+```
+
+### GetAll
+
+有兩個多載，使用方法同 GetFirstOrDefault，返回型態為 IQueryable
+
+```csharp
+  repo.GetAll(selector: a => a.Name,
+              predicate: a => a.Id > 1,
+              orderBy: a => a.OrderBy(b => b.Id),
+              include: a => a.Include(b => b.Phones),
+              disableTracking: true);
+                         
+  repo.GetAll(predicate: a => a.Id == 1,
+              orderBy: a => a.OrderBy(b => b.Id),
+              include: a => a.Include(b => b.Phones),
+              disableTracking: true);
+```
+
+### GetPagedList & GetPagedListAsync
+
+有兩個多載，使用方法同 GetFirstOrDefault，傳入參數多了 PageIndex 和 PageSize (Async 方法使用相同)
+PageIndex 從 0 開始，預設 PageSize 為 20
+
+```csharp
+  repo.GetPagedList(selector: a => a.Name,
+                    predicate: a => a.Id > 1,
+                    orderBy: a => a.OrderBy(b => b.Id),
+                    include: a => a.Include(b => b.Phones),
+                    pageIndex = 0, 
+                    pageSize = 10, 
+                    disableTracking: true);
+                         
+  repo.GetPagedList(predicate: a => a.Id > 1,
+                    orderBy: a => a.OrderBy(b => b.Id),
+                    include: a => a.Include(b => b.Phones),
+                    pageIndex = 0, 
+                    pageSize = 10, 
+                    disableTracking: true);
+```
+
+返回型態為 IPagedList<TResult>，資料在 Items 裡面
+
+```csharp
+    public interface IPagedList<T>
+    {
+        int IndexFrom { get; } 
+
+        int PageIndex { get; } 
+
+        int PageSize { get; } 
+
+        int TotalCount { get; }
+
+        int TotalPages { get; }
+
+        IList<T> Items { get; }
+
+        bool HasPreviousPage { get; }
+
+        bool HasNextPage { get; }
+    }
+```
+
+### Find
+
+傳入參數為 Key (Async 方法使用相同)
+
+```csharp
+    repo.Find(1);
+    
+    repo.Find(1, "key");
+```
+
+### Count
+
+可以傳入 Predicate，取得數量
+
+```csharp
+    repo.Count();
+    
+    repo.Count(a => a.Id > 1);
+```
+
+### Any
+
+可以傳入 Predicate，取得是否有資料
+
+```csharp
+    repo.Any();
+    
+    repo.Any(a => a.Id > 1);
+```
+
+### FromSql
+
+原始 SQL 語句，可以使用字串內插的方式或是使用 Parameter 的方式傳參數
+
+```csharp
+    repo.FromSql($"select * from Person where id = {1}");
+
+    repo.FromSql("select * from Person where id = @id", new SqlParameter("id", 1));
+```
+
+### Insert & InsertAsync
+
+有三個多載，可以傳入單一 Entity、多筆 Entity 或是一個集合 (Async 方法使用相同)
+
+```csharp
+    repo.Insert(new Person { Id = 1, Name = "a" });
+
+    repo.Insert(new Person { Id = 2, Name = "b" }, new Person { Id = 3, Name = "c" });
+
+    repo.Insert(new List<Person>
+    {
+        new Person { Id = 4, Name = "d" },
+        new Person { Id = 5, Name = "e" }
+    });
+```
+
+### Update 
+
+有三個多載，可以傳入單一 Entity、多筆 Entity 或是一個集合 
+
+```csharp
+    var persons = repo.GetAll();
+    
+    persons[0].Name = "123";
+    persons[1].Name = "456";
+    
+    repo.Update(persons[0]);
+
+    repo.Update(persons[0], person[1]);
+
+    repo.Insert(persons);
+```
+
+### Delete
+
+有四個多載，可以傳入 Entity 的 Key、單一 Entity、多筆 Entity 或是一個集合 
+
+```csharp
+    var persons = repo.GetAll();
+    
+    persons[0].Name = "123";
+    persons[1].Name = "456";
+    
+    repo.Delete(1);
+    
+    repo.Delete(persons[0]);
+
+    repo.Delete(persons[0], person[1]);
+
+    repo.Delete(persons);
+
+```
 
 
 
