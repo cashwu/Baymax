@@ -63,8 +63,8 @@ namespace Baymax.Entity.Interface
 
         void Update(IEnumerable<TEntity> entities);
 
-        void Delete(object id);
-
+        void Delete(params object[] keyValues);
+        
         void Delete(TEntity entity);
 
         void Delete(params TEntity[] entities);

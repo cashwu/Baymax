@@ -21,7 +21,6 @@ namespace Baymax.Tests.Entity
             _unitOfWork = new ServiceCollection()
                           .AddDbContext<TestDbContext>(options =>
                           {
-                              // options.UseInMemoryDatabase(Guid.NewGuid().ToString());
                               options.UseSqlite("DataSource=:memory:", x =>
                               {
                               });
@@ -35,7 +34,7 @@ namespace Baymax.Tests.Entity
         }
 
         [Fact]
-        public void Init()
+        public void UnitOfWork_Init()
         {
             _unitOfWork.DbContext.Should().NotBeNull();
             var repo = _unitOfWork.GetRepository<Person>();
@@ -49,6 +48,36 @@ namespace Baymax.Tests.Entity
 
             var repoView2 = _unitOfWork.GetViewRepository<PersonView>();
             repoView.Should().BeSameAs(repoView2);
+        }
+
+        [Fact]
+        public async Task UnitOfWork_Commit()
+        {
+            var repo = _unitOfWork.GetRepository<Person>();
+
+            repo.Insert(new Person { Id = 1, Name = "a" });
+
+            _unitOfWork.Commit().Should().Be(1);
+
+            repo.Insert(new Person { Id = 2, Name = "a" });
+
+            await _unitOfWork.CommitAsync();
+            
+            repo.Count().Should().Be(2);
+        }
+        
+        [Fact]
+        public void UnitOfWork_FromSql()
+        {
+            GivenPersonData();
+            
+            var command = _unitOfWork.ExecuteSqlCommand($"delete from Phone where id = {1}");
+
+            command.Should().Be(1);
+            
+            var command2 = _unitOfWork.ExecuteSqlCommand("delete from Phone where id = @id", new SqliteParameter("id", 2));
+
+            command2.Should().Be(1);
         }
 
         [Fact]
@@ -157,22 +186,7 @@ namespace Baymax.Tests.Entity
                                              disableTracking: true)
                                      .ToList();
 
-            new List<Person>
-                    {
-                        new Person
-                        {
-                            Id = 2, Name = "b", Phones = new HashSet<Phone>
-                            {
-                                new Phone { Id = 3, Number = "321" },
-                                new Phone { Id = 4, Number = "654" }
-                            }
-                        },
-                        new Person
-                        {
-                            Id = 3, Name = "ab", Phones = new HashSet<Phone>()
-                        }
-                    }.ToExpectedObject()
-                     .ShouldEqual(persons);
+            Persons().Where(a => a.Id > 1).ToList().ToExpectedObject().ShouldEqual(persons);
         }
 
         [Fact]
@@ -399,6 +413,40 @@ namespace Baymax.Tests.Entity
                      .ShouldEqual(ps2);
         }
 
+        [Fact]
+        public void Repository_Delete()
+        {
+            GivenPersonData();
+
+            var repo = _unitOfWork.GetRepository<Phone>();
+
+            repo.Delete(1);
+            _unitOfWork.Commit();
+
+            repo.Any(a => a.Id == 1).Should().BeFalse();
+
+            var phone = repo.GetFirstOrDefault(predicate: a => a.Id == 2, disableTracking: false);
+
+            repo.Delete(phone);
+            _unitOfWork.Commit();
+
+            repo.Any(a => a.Id == 2).Should().BeFalse();
+
+            var phones = repo.GetAll(predicate: a => a.Id == 3 || a.Id == 4, disableTracking: false).ToList();
+
+            repo.Delete(phones[0], phones[1]);
+            _unitOfWork.Commit();
+
+            repo.Any(a => a.Id == 3 || a.Id == 4).Should().BeFalse();
+            
+            var phones2 = repo.GetAll(predicate: a => a.Id == 5 || a.Id == 6, disableTracking: false);
+
+            repo.Delete(phones2);
+            _unitOfWork.Commit();
+
+            repo.Any(a => a.Id == 5 || a.Id == 6).Should().BeFalse();
+        }
+
         private void GivenPersonData()
         {
             _unitOfWork.GetRepository<Person>().Insert(Persons());
@@ -411,7 +459,8 @@ namespace Baymax.Tests.Entity
             {
                 new Person
                 {
-                    Id = 1, Name = "a", Phones = new HashSet<Phone>
+                    Id = 1, Name = "a",
+                    Phones = new HashSet<Phone>
                     {
                         new Phone { Id = 1, Number = "123" },
                         new Phone { Id = 2, Number = "456" }
@@ -419,7 +468,8 @@ namespace Baymax.Tests.Entity
                 },
                 new Person
                 {
-                    Id = 2, Name = "b", Phones = new HashSet<Phone>
+                    Id = 2, Name = "b",
+                    Phones = new HashSet<Phone>
                     {
                         new Phone { Id = 3, Number = "321" },
                         new Phone { Id = 4, Number = "654" }
@@ -428,7 +478,11 @@ namespace Baymax.Tests.Entity
                 new Person
                 {
                     Id = 3, Name = "ab",
-                    Phones = new HashSet<Phone>()
+                    Phones = new HashSet<Phone>
+                    {
+                        new Phone { Id = 5, Number = "777" },
+                        new Phone { Id = 6, Number = "888" }
+                    }
                 }
             };
         }

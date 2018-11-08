@@ -221,24 +221,12 @@ namespace Baymax.Entity
             _dbSet.Remove(entity);
         }
 
-        public virtual void Delete(object id)
+        public virtual void Delete(params object[] keyValues)
         {
-            var typeInfo = typeof(TEntity).GetTypeInfo();
-            var key = _dbContext.Model.FindEntityType(typeInfo).FindPrimaryKey().Properties.FirstOrDefault();
-            var property = typeInfo.GetProperty(key?.Name);
-            if (property != null)
+            var entity = _dbSet.Find(keyValues);
+            if (entity != null)
             {
-                var entity = Activator.CreateInstance<TEntity>();
-                property.SetValue(entity, id);
-                _dbContext.Entry(entity).State = EntityState.Deleted;
-            }
-            else
-            {
-                var entity = _dbSet.Find(id);
-                if (entity != null)
-                {
-                    Delete(entity);
-                }
+                Delete(entity);
             }
         }
 
