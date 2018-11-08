@@ -576,6 +576,15 @@ PageIndex 從 0 開始，預設 PageSize 為 20
     }
 ```
 
+### Find
+
+傳入參數為 Key (Async 方法使用相同)
+
+```csharp
+    repo.Find(1);
+    
+    repo.Find(1, "key");
+```
 
 
 

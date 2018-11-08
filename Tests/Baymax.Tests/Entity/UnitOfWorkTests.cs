@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Baymax.Entity.Interface;
 using ExpectedObjects;
@@ -278,6 +279,27 @@ namespace Baymax.Tests.Entity
             }
         }
 
+        [Fact]
+        public async Task Repository_Find()
+        {
+            GivenPersonData();
+
+            var person = _unitOfWork.GetRepository<Person>()
+                                    .Find(1);
+
+            Persons().First().ToExpectedObject().ShouldEqual(person);
+
+            person = await _unitOfWork.GetRepository<Person>()
+                                      .FindAsync(1);
+
+            Persons().First().ToExpectedObject().ShouldEqual(person);
+
+            person = await _unitOfWork.GetRepository<Person>()
+                                      .FindAsync(new object[] { 1 }, CancellationToken.None);
+
+            Persons().First().ToExpectedObject().ShouldEqual(person);
+        }
+
         private void GivenPersonData()
         {
             _unitOfWork.GetRepository<Person>().Insert(Persons());
@@ -290,7 +312,7 @@ namespace Baymax.Tests.Entity
             {
                 new Person
                 {
-                    Id = 1, Name = "a", Phones = new HashSet<Phone>()
+                    Id = 1, Name = "a", Phones = new HashSet<Phone>
                     {
                         new Phone { Id = 1, Number = "123" },
                         new Phone { Id = 2, Number = "456" }
