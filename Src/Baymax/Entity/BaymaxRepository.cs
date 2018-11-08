@@ -9,7 +9,6 @@ using Baymax.Entity.Interface;
 using Baymax.Extension.Entity;
 using Baymax.Util;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Query;
 
 namespace Baymax.Entity
@@ -23,14 +22,6 @@ namespace Baymax.Entity
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _dbSet = _dbContext.Set<TEntity>();
-        }
-
-        public virtual void ChangeTable(string table)
-        {
-            if (_dbContext.Model.FindEntityType(typeof(TEntity)).Relational() is RelationalEntityTypeAnnotations relational)
-            {
-                relational.TableName = table;
-            }
         }
 
         public virtual IPagedList<TEntity> GetPagedList(Expression<Func<TEntity, bool>> predicate = null,
@@ -84,7 +75,7 @@ namespace Baymax.Entity
 
             return query.Select(selector).ToPagedListAsync(pageIndex, pageSize, cancellationToken: cancellationToken);
         }
-        
+
         public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate = null,
                                           Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
                                           Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
@@ -144,16 +135,6 @@ namespace Baymax.Entity
             return query.FirstOrDefaultAsync();
         }
 
-        public virtual IQueryable<TEntity> FromSql(RawSqlString sql, params object[] parameters)
-        {
-            return _dbSet.FromSql(sql, parameters);
-        }
-
-        public IQueryable<TEntity> FromSql(FormattableString sql)
-        {
-            return _dbSet.FromSql(sql);
-        }
-
         public virtual TEntity Find(params object[] keyValues)
         {
             return _dbSet.Find(keyValues);
@@ -171,7 +152,22 @@ namespace Baymax.Entity
 
         public virtual int Count(Expression<Func<TEntity, bool>> predicate = null)
         {
-            return _dbSet.Count(predicate);
+            return predicate == null ? _dbSet.Count() : _dbSet.Count(predicate);
+        }
+
+        public virtual bool Any(Expression<Func<TEntity, bool>> predicate = null)
+        {
+            return predicate == null ? _dbSet.Any() : _dbSet.Any(predicate);
+        }
+
+        public virtual IQueryable<TEntity> FromSql(RawSqlString sql, params object[] parameters)
+        {
+            return _dbSet.FromSql(sql, parameters);
+        }
+
+        public IQueryable<TEntity> FromSql(FormattableString sql)
+        {
+            return _dbSet.FromSql(sql);
         }
 
         public virtual void Insert(TEntity entity)
@@ -254,11 +250,6 @@ namespace Baymax.Entity
         public virtual void Delete(IEnumerable<TEntity> entities)
         {
             _dbSet.RemoveRange(entities);
-        }
-
-        public virtual bool Any(Expression<Func<TEntity, bool>> predicate)
-        {
-            return _dbSet.Any(predicate);
         }
 
         private IQueryable<TEntity> GetBaseQuery(Expression<Func<TEntity, bool>> predicate,

@@ -11,8 +11,6 @@ namespace Baymax.Entity.Interface
 {
     public interface IBaymaxRepository<TEntity> where TEntity : BaseEntity
     {
-        void ChangeTable(string table);
-
         IPagedList<TEntity> GetPagedList(Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null, int pageIndex = 0, int pageSize = 20, bool disableTracking = true);
 
         Task<IPagedList<TEntity>> GetPagedListAsync(Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null, int pageIndex = 0, int pageSize = 20, bool disableTracking = true, CancellationToken cancellationToken = default(CancellationToken));
@@ -33,18 +31,20 @@ namespace Baymax.Entity.Interface
 
         Task<TEntity> GetFirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null, bool disableTracking = true);
 
-        IQueryable<TEntity> FromSql(RawSqlString sql, params object[] parameters);
-
-        IQueryable<TEntity> FromSql(FormattableString sql);
-
         TEntity Find(params object[] keyValues);
 
         Task<TEntity> FindAsync(params object[] keyValues);
 
         Task<TEntity> FindAsync(object[] keyValues, CancellationToken cancellationToken);
-
+        
         int Count(Expression<Func<TEntity, bool>> predicate = null);
+        
+        bool Any(Expression<Func<TEntity, bool>> predicate = null);
 
+        IQueryable<TEntity> FromSql(RawSqlString sql, params object[] parameters);
+
+        IQueryable<TEntity> FromSql(FormattableString sql);
+        
         void Insert(TEntity entity);
 
         void Insert(params TEntity[] entities);
@@ -70,7 +70,5 @@ namespace Baymax.Entity.Interface
         void Delete(params TEntity[] entities);
 
         void Delete(IEnumerable<TEntity> entities);
-
-        bool Any(Expression<Func<TEntity, bool>> predicate);
     }
 }

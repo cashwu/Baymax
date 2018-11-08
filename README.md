@@ -586,7 +586,25 @@ PageIndex 從 0 開始，預設 PageSize 為 20
     repo.Find(1, "key");
 ```
 
+### Count
 
+可以傳入 Predicate，取得數量
+
+```csharp
+    repo.Count();
+    
+    repo.Count(a => a.Id > 1);
+```
+
+### Any
+
+可以傳入 Predicate，取得是否有資料
+
+```csharp
+    repo.Any();
+    
+    repo.Any(a => a.Id > 1);
+```
 
 
 

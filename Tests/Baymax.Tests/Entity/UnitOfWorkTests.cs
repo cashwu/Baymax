@@ -300,6 +300,30 @@ namespace Baymax.Tests.Entity
             Persons().First().ToExpectedObject().ShouldEqual(person);
         }
 
+        [Fact]
+        public void Repository_Count()
+        {
+            GivenPersonData();
+
+            var count = _unitOfWork.GetRepository<Person>().Count();
+            count.Should().Be(3);
+
+            count = _unitOfWork.GetRepository<Person>().Count(a => a.Id > 1);
+            count.Should().Be(2);
+        }
+        
+        [Fact]
+        public void Repository_Any()
+        {
+            GivenPersonData();
+
+            var count = _unitOfWork.GetRepository<Person>().Any();
+            count.Should().BeTrue();
+
+            count = _unitOfWork.GetRepository<Person>().Any(a => a.Id > 10);
+            count.Should().BeFalse();
+        }
+
         private void GivenPersonData()
         {
             _unitOfWork.GetRepository<Person>().Insert(Persons());
