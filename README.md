@@ -18,7 +18,8 @@
 - [Log](#log)
 - [Service](#service)
 - [BackgroundService](#backgroundservice)
-- [UnitOfWork & Repository](#unitofwork)
+- [UnitOfWork](#unitofwork)
+- [Repository](#repository)
 
 ---
  
@@ -355,7 +356,7 @@ public void ConfigureServices(IServiceCollection services)
 
 ## UnitOfWork
 
-> 實作了 UnitOfWork 和 Repository Pattern，並且封裝了一些對 db context 的操作
+> 實作了 UnitOfWork Pattern
 
 ### 建立 DBContext 
 
@@ -428,7 +429,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-### 使用
+### 取得 Repository 
 
 注入 UnitOfWork 
 
@@ -458,6 +459,72 @@ public class IndexController : Controller
 ```
 
 > 需注意如果 DbSet 和 DbQuery 的 class 沒有繼承相對應的 class 在裡會報錯
+
+### Commit
+
+原本 DBContext 的 SaveChange，有同步和非同步的方法
+
+```csharp
+    unitOfWork.Commit();
+    unitOfWork.CommitAsync();
+```
+
+## Repository
+
+> 實作了 Repository Pattern，並且封裝了一些對 Entity 的操作，需搭配上述的 UnitOfWork 使用
+
+### Insert & InsertAsync
+
+有三個多載，可以傳入單一 Entity 和 多筆 Entity 或是一個集合 (Async 方法使用相同)
+
+```csharp
+    repo.Insert(new Person { Id = 1, Name = "a" });
+
+    repo.Insert(new Person { Id = 2, Name = "b" }, new Person { Id = 3, Name = "c" });
+
+    repo.Insert(new List<Person>
+    {
+        new Person { Id = 4, Name = "d" },
+        new Person { Id = 5, Name = "e" }
+    });
+```
+
+### GetFirstOrDefault & GetFirstOrDefaultAsync
+
+有兩個多載，主要的不同是返回物件是不是同一個 Entity，傳入參數如下 (Async 方法使用相同)
+
+- Expression<Func<TEntity, TResult>> selector (兩個多載主要差在這個參數)
+- Expression<Func<TEntity, bool>> predicate = null
+- Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null
+- Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null
+- bool disableTracking = true
+
+基本上所有的參數都有預設值 (selector 除外)，建議使用具名引數的方式來呼叫
+
+```csharp
+  repo.GetFirstOrDefault(selector: a => a.Name,
+                         predicate: a => a.Id == 2,
+                         orderBy: a => a.OrderBy(b => b.Id),
+                         include: a => a.Include(b => b.Phones),
+                         disableTracking: true);
+                         
+  repo.GetFirstOrDefault(predicate: a => a.Id == 1,
+                         orderBy: a => a.OrderBy(b => b.Id),
+                         include: a => a.Include(b => b.Phones),
+                         disableTracking: true);
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
