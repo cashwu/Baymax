@@ -531,6 +531,51 @@ public class IndexController : Controller
               disableTracking: true);
 ```
 
+### GetPagedList & GetPagedListAsync
+
+有兩個多載，使用方法同 GetFirstOrDefault，傳入參數多了 PageIndex 和 PageSize (Async 方法使用相同)
+PageIndex 從 0 開始，預設 PageSize 為 20
+
+```csharp
+  repo.GetPagedList(selector: a => a.Name,
+                    predicate: a => a.Id > 1,
+                    orderBy: a => a.OrderBy(b => b.Id),
+                    include: a => a.Include(b => b.Phones),
+                    pageIndex = 0, 
+                    pageSize = 10, 
+                    disableTracking: true);
+                         
+  repo.GetPagedList(predicate: a => a.Id > 1,
+                    orderBy: a => a.OrderBy(b => b.Id),
+                    include: a => a.Include(b => b.Phones),
+                    pageIndex = 0, 
+                    pageSize = 10, 
+                    disableTracking: true);
+```
+
+返回型態為 IPagedList<TResult>，資料在 Items 裡面
+
+```csharp
+    public interface IPagedList<T>
+    {
+        int IndexFrom { get; } 
+
+        int PageIndex { get; } 
+
+        int PageSize { get; } 
+
+        int TotalCount { get; }
+
+        int TotalPages { get; }
+
+        IList<T> Items { get; }
+
+        bool HasPreviousPage { get; }
+
+        bool HasNextPage { get; }
+    }
+```
+
 
 
 
