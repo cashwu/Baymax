@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ExpectedObjects;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -126,9 +127,55 @@ namespace Baymax.Tests.Entity
             d2.Phone.Should().Be("123");
         }
 
+        [Fact]
+        public async Task Repository_GetAll()
+        {
+            GivenPersonData();
+
+            var names = _unitOfWork.GetRepository<Person>()
+                                   .GetAll(selector: a => a.Name,
+                                           predicate: a => a.Id > 1,
+                                           orderBy: a => a.OrderByDescending(b => b.Id),
+                                           include: a => a.Include(b => b.Phones),
+                                           disableTracking: true)
+                                   .ToList();
+
+            new List<string> { "b", "ab" }.ToExpectedObject().ShouldEqual(names);
+
+            var persons = _unitOfWork.GetRepository<Person>()
+                                     .GetAll(predicate: a => a.Id > 1,
+                                             orderBy: a => a.OrderBy(b => b.Id),
+                                             include: a => a.Include(b => b.Phones),
+                                             disableTracking: true)
+                                     .ToList();
+
+            new List<Person>
+                    {
+                        new Person
+                        {
+                            Id = 2, Name = "b", Phones = new HashSet<Phone>
+                            {
+                                new Phone { Id = 3, Number = "321" },
+                                new Phone { Id = 4, Number = "654" }
+                            }
+                        },
+                        new Person
+                        {
+                            Id = 3, Name = "ab", Phones = new HashSet<Phone>()
+                        }
+                    }.ToExpectedObject()
+                     .ShouldEqual(persons);
+        }
+
         private void GivenPersonData()
         {
-            var data = new List<Person>
+            _unitOfWork.GetRepository<Person>().Insert(Persons());
+            _unitOfWork.Commit();
+        }
+
+        private List<Person> Persons()
+        {
+            return new List<Person>
             {
                 new Person
                 {
@@ -145,11 +192,12 @@ namespace Baymax.Tests.Entity
                         new Phone { Id = 3, Number = "321" },
                         new Phone { Id = 4, Number = "654" }
                     }
+                },
+                new Person
+                {
+                    Id = 3, Name = "ab"
                 }
             };
-
-            _unitOfWork.GetRepository<Person>().Insert(data);
-            _unitOfWork.Commit();
         }
     }
 }

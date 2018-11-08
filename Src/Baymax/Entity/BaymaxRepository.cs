@@ -84,6 +84,23 @@ namespace Baymax.Entity
 
             return query.Select(selector).ToPagedListAsync(pageIndex, pageSize, cancellationToken: cancellationToken);
         }
+        
+        public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate = null,
+                                          Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+                                          Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
+                                          bool disableTracking = true)
+        {
+            return GetBaseQuery(predicate, orderBy, include, disableTracking);
+        }
+
+        public IQueryable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector,
+                                                   Expression<Func<TEntity, bool>> predicate = null,
+                                                   Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+                                                   Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null,
+                                                   bool disableTracking = true)
+        {
+            return GetBaseQuery(predicate, orderBy, include, disableTracking).Select(selector);
+        }
 
         public virtual TEntity GetFirstOrDefault(Expression<Func<TEntity, bool>> predicate = null,
                                                  Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
@@ -237,40 +254,6 @@ namespace Baymax.Entity
         public virtual void Delete(IEnumerable<TEntity> entities)
         {
             _dbSet.RemoveRange(entities);
-        }
-
-        public virtual IEnumerable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate = null, bool disableTrack = true)
-        {
-            IQueryable<TEntity> query = _dbSet;
-
-            if (disableTrack)
-            {
-                query.AsNoTracking();
-            }
-            
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            return query.Select(selector);
-        }
-
-        public virtual IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate = null, bool disableTrack = true)
-        {
-            IQueryable<TEntity> query = _dbSet;
-
-            if (disableTrack)
-            {
-                query.AsNoTracking();
-            }
-
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            return query;
         }
 
         public virtual bool Any(Expression<Func<TEntity, bool>> predicate)

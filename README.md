@@ -514,7 +514,22 @@ public class IndexController : Controller
                          disableTracking: true);
 ```
 
+### GetAll
 
+有兩個多載，使用方法同 GetFirstOrDefault，返回型態為 IQueryable
+
+```csharp
+  repo.GetAll(selector: a => a.Name,
+              predicate: a => a.Id > 1,
+              orderBy: a => a.OrderBy(b => b.Id),
+              include: a => a.Include(b => b.Phones),
+              disableTracking: true);
+                         
+  repo.GetAll(predicate: a => a.Id == 1,
+              orderBy: a => a.OrderBy(b => b.Id),
+              include: a => a.Include(b => b.Phones),
+              disableTracking: true);
+```
 
 
 
