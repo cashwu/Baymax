@@ -20,6 +20,16 @@
 - [BackgroundService](#backgroundservice)
 - [UnitOfWork](#unitofwork)
 - [Repository](#repository)
+    - [GetFirstOrDefault & GetFirstOrDefaultAsync](#getfirstordefault--getfirstordefaultasync)
+    - [GetAll](#getall)
+    - [GetPagedList & GetPagedListAsync](#getpagedlist--getpagedlistasync)
+    - [Find](#find)
+    - [Count](#count)
+    - [Any](#any)
+    - [FromSql](#fromsql)
+    - [Insert & InsertAsync](#insert--insertasync)
+    - [Update](#update)
+    - [Delete](#delete)
 
 ---
  
