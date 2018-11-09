@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Baymax.Tests.Extension
 {
-    public class IEnumableExtensionTests
+    public class IEnumerableExtensionTests
     {
         [Fact]
         public void Array_ToJoinString()
