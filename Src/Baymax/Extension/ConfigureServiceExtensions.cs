@@ -17,10 +17,11 @@ namespace Baymax.Extension
 {
     public static class ConfigureServiceExtensions
     {
-        public static void AddEntityValidation<TEntity>(this IServiceCollection services, Func<object, ValidationResult> checkFunc)
+        public static IServiceCollection AddEntityValidation<TEntity>(this IServiceCollection services, Func<object, ValidationResult> checkFunc)
                 where TEntity : BaseEntity
         {
             EntityValidation.SetProcessRoutines(typeof(TEntity), checkFunc);
+            return services;
         }
 
         public static IServiceCollection AddBackgroundService(this IServiceCollection services, params Type[] type)
