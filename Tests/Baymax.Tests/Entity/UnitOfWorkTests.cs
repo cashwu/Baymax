@@ -1,8 +1,12 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Baymax.Entity.Interface;
+using Baymax.Exception;
+using Baymax.Extension;
 using ExpectedObjects;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
@@ -12,25 +16,13 @@ using Xunit;
 
 namespace Baymax.Tests.Entity
 {
-    public class UnitOfWorkTests
+    public class UnitOfWorkTests : IDisposable
     {
-        private readonly ITestUnitOfWork _unitOfWork;
+        private ITestUnitOfWork _unitOfWork;
 
         public UnitOfWorkTests()
         {
-            _unitOfWork = new ServiceCollection()
-                          .AddDbContext<TestDbContext>(options =>
-                          {
-                              options.UseSqlite("DataSource=:memory:", x =>
-                              {
-                              });
-                          })
-                          .AddScoped<ITestUnitOfWork, TestUnitOfWork>()
-                          .BuildServiceProvider()
-                          .GetRequiredService<ITestUnitOfWork>();
-
-            _unitOfWork.DbContext.Database.OpenConnection();
-            _unitOfWork.DbContext.Database.EnsureCreated();
+            _unitOfWork = GivenUnitOfWork(o => ValidationResult.Success);
         }
 
         [Fact]
@@ -62,23 +54,60 @@ namespace Baymax.Tests.Entity
             repo.Insert(new Person { Id = 2, Name = "a" });
 
             await _unitOfWork.CommitAsync();
-            
+
             repo.Count().Should().Be(2);
         }
-        
+
         [Fact]
         public void UnitOfWork_FromSql()
         {
             GivenPersonData();
-            
+
             var command = _unitOfWork.ExecuteSqlCommand($"delete from Phone where id = {1}");
 
             command.Should().Be(1);
-            
+
             var command2 = _unitOfWork.ExecuteSqlCommand("delete from Phone where id = @id", new SqliteParameter("id", 2));
 
             command2.Should().Be(1);
         }
+
+        [Fact]
+        public void UnitOfWork_ValidationEntity()
+        {
+            var unitOfWork = GivenUnitOfWorkWithEntityValidation();
+
+            var repo = unitOfWork.GetRepository<Person>();
+
+            repo.Insert(new Person { Id = 1, Name = "123456" });
+            unitOfWork.Commit();
+
+            repo.Insert(new Person { Id = 2, Name = "123"});
+
+            AssertException();
+            
+            var person = repo.GetFirstOrDefault(predicate: a => a.Id == 1);
+            person.Name = "123";
+
+            AssertException();
+
+            void AssertException()
+            {
+                var ex = Assert.Throws<EntityValidationException>(() =>
+                               {
+                                   unitOfWork.Commit();
+                               })
+                               .Exceptions;
+
+                new List<ValidationException>
+                        {
+                            new ValidationException(new ValidationResult("Name Error", new[] { "Name" }), null, null)
+                        }.ToExpectedObject()
+                         .ShouldEqual(ex);
+            }
+
+        }
+
 
         [Fact]
         public async Task Repository_Insert()
@@ -165,7 +194,7 @@ namespace Baymax.Tests.Entity
         }
 
         [Fact]
-        public async Task Repository_GetAll()
+        public void Repository_GetAll()
         {
             GivenPersonData();
 
@@ -438,7 +467,7 @@ namespace Baymax.Tests.Entity
             _unitOfWork.Commit();
 
             repo.Any(a => a.Id == 3 || a.Id == 4).Should().BeFalse();
-            
+
             var phones2 = repo.GetAll(predicate: a => a.Id == 5 || a.Id == 6, disableTracking: false);
 
             repo.Delete(phones2);
@@ -485,6 +514,51 @@ namespace Baymax.Tests.Entity
                     }
                 }
             };
+        }
+        
+        private ITestUnitOfWork GivenUnitOfWork(Func<object, ValidationResult> checkFunc)
+        {
+            var unitOfWork = new ServiceCollection()
+                          .AddDbContext<TestDbContext>(options =>
+                          {
+                              options.UseSqlite("DataSource=:memory:", x =>
+                              {
+                              });
+                          })
+                          .AddEntityValidation<Person>(checkFunc)
+                          .AddScoped<ITestUnitOfWork, TestUnitOfWork>()
+                          .BuildServiceProvider()
+                          .GetRequiredService<ITestUnitOfWork>();
+
+            unitOfWork.DbContext.Database.OpenConnection();
+            unitOfWork.DbContext.Database.EnsureCreated();
+
+            return unitOfWork;
+        }
+        
+        private ITestUnitOfWork GivenUnitOfWorkWithEntityValidation()
+        {
+            ValidationResult CheckFunc(object o)
+            {
+                var p = o as Person;
+                if (p.Name.Length < 5)
+                {
+                    return new ValidationResult("Name Error", new[]
+                    {
+                        "Name"
+                    });
+                }
+
+                return ValidationResult.Success;
+            }
+
+            return GivenUnitOfWork(CheckFunc);
+        }
+
+        public void Dispose()
+        {
+            _unitOfWork.DbContext.Database.CloseConnection();
+            _unitOfWork?.Dispose();
         }
     }
 }

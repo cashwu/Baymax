@@ -479,6 +479,47 @@ UnitOfWork 可以直接執行原始 SQL 語句，可以使用字串內插的方�
     unitOfWork.ExecuteSqlCommand("delete from Phone where id = @id", new SqlParameter("id", 1));
 ```
 
+### Entity Validation
+
+可以在 Commit 之前針對 Insert 和 Update 的 Entity 作 Validation，
+必需在 Service 註冊 AddEntityValidation<TEntity>，然後在裡面寫 Validation 的檢查條件，
+注意 Func 的傳入參數為 object，傳出為 ValidationResult
+
+> 一個 Entity 的型別必須要加一次 AddEntityValidation
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddEntityValidation<Person>(o => {
+        var p = o as Person;
+        if (p.Name.Length < 5)
+        {
+            return new ValidationResult("Name Error", new[]
+            {
+                "Name"
+            });
+        }
+
+        return ValidationResult.Success;
+    });
+}
+```
+
+之後在 Commit 的時候就會自動針對註冊的 Entity 作檢查，有問題的話會 throw EntityValidationException，
+裡面的 Exception，會有所有 Entity 的 ValidationException
+
+```csharp
+    try
+    {
+        unitOfWork.Commit();
+    }
+    catch (EntityValidationException ex)
+    {
+         List<ValidationException> validationExceptions = ex.Exceptions;
+    }
+```
+
+
 ## Repository
 
 > 實作了 Repository Pattern，並且封裝了一些對 Entity 的操作，需搭配上述的 UnitOfWork 使用

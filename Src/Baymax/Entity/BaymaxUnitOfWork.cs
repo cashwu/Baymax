@@ -75,13 +75,6 @@ namespace Baymax.Entity
             return _context.Database.ExecuteSqlCommand(sql, parameters);
         }
 
-        protected IEnumerable<object> GetEntitiesByState(Func<EntityEntry, bool> predicate)
-        {
-            return DbContext.ChangeTracker.Entries()
-                            .Where(predicate)
-                            .Select(a => a.Entity);
-        }
-
         private void ValidateObject()
         {
             if (!EntityValidation.AnyProcessRoutines())
@@ -105,6 +98,13 @@ namespace Baymax.Entity
                     throw new EntityValidationException(results);
                 }
             }
+        }
+
+        private IEnumerable<object> GetEntitiesByState(Func<EntityEntry, bool> predicate)
+        {
+            return _context.ChangeTracker.Entries()
+                            .Where(predicate)
+                            .Select(a => a.Entity);
         }
 
         public void Dispose()
