@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Baymax.Entity;
 using Baymax.Entity.Interface;
 using Baymax.Exception;
 using Baymax.Extension;

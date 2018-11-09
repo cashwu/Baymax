@@ -38,7 +38,7 @@ namespace Baymax.Tests.Services
         }
 
         [Fact]
-        public async Task ParamsEmpty()
+        public void ParamsEmpty()
         {
             Assert.Throws<ArgumentNullException>(() =>
                   {
@@ -49,7 +49,7 @@ namespace Baymax.Tests.Services
         }
 
         [Fact]
-        public async Task NotImplementType()
+        public void NotImplementType()
         {
             Assert.Throws<ArgumentException>(() =>
                   {
