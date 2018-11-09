@@ -13,20 +13,22 @@ namespace Baymax.Entity
 
         public BaymaxQueryRepository(DbContext dbContext)
         {
-            var db = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _dbQuery = db.Query<TEntity>();
+            if (dbContext == null)
+            {
+                throw new ArgumentNullException(nameof(dbContext));
+            }
+            
+            _dbQuery = dbContext.Query<TEntity>();
         }
 
-        public IEnumerable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate = null)
+        public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, bool disableTracking = true)
         {
-            IQueryable<TEntity> query = _dbQuery;
+            return GetBaseQuery(predicate, orderBy, disableTracking);
+        }
 
-            if (predicate != null)
-            {
-                query = query.Where(predicate);
-            }
-
-            return query.Select(selector);
+        public IQueryable<TResult> GetAll<TResult>(Expression<Func<TEntity, TResult>> selector, Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, bool disableTracking = true)
+        {
+            return GetBaseQuery(predicate, orderBy, disableTracking).Select(selector);
         }
 
         public IQueryable<TEntity> FromSql(RawSqlString sql, params object[] parameters) 
@@ -37,6 +39,30 @@ namespace Baymax.Entity
         public IQueryable<TEntity> FromSql(FormattableString sql)
         {
             return _dbQuery.FromSql(sql);
+        }
+
+        private IQueryable<TEntity> GetBaseQuery(Expression<Func<TEntity, bool>> predicate,
+                                                 Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy,
+                                                 bool disableTracking)
+        {
+            IQueryable<TEntity> query = _dbQuery;
+
+            if (disableTracking)
+            {
+                query = query.AsNoTracking();
+            }
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+
+            return query;
         }
     }
 }

@@ -82,10 +82,10 @@ namespace Baymax.Tests.Entity
             repo.Insert(new Person { Id = 1, Name = "123456" });
             unitOfWork.Commit();
 
-            repo.Insert(new Person { Id = 2, Name = "123"});
+            repo.Insert(new Person { Id = 2, Name = "123" });
 
             AssertException();
-            
+
             var person = repo.GetFirstOrDefault(predicate: a => a.Id == 1);
             person.Name = "123";
 
@@ -105,9 +105,7 @@ namespace Baymax.Tests.Entity
                         }.ToExpectedObject()
                          .ShouldEqual(ex);
             }
-
         }
-
 
         [Fact]
         public async Task Repository_Insert()
@@ -476,6 +474,61 @@ namespace Baymax.Tests.Entity
             repo.Any(a => a.Id == 5 || a.Id == 6).Should().BeFalse();
         }
 
+        [Fact]
+        public void QueryRepository_Get()
+        {
+            GivenPersonView();
+            GivenPersonData();
+
+            var names = _unitOfWork.GetViewRepository<PersonView>()
+                                   .GetAll(selector: a => a.Name,
+                                           predicate: a => a.Id > 1,
+                                           orderBy: a => a.OrderByDescending(b => b.Id),
+                                           disableTracking: true)
+                                   .ToList();
+
+            new List<string> { "b", "ab" }.ToExpectedObject().ShouldEqual(names);
+
+            var persons = _unitOfWork.GetViewRepository<PersonView>()
+                                     .GetAll(predicate: a => a.Id > 1,
+                                             orderBy: a => a.OrderBy(b => b.Id),
+                                             disableTracking: true)
+                                     .ToList();
+            new List<PersonView>
+                    {
+                        new PersonView { Id = 2, Name = "b" },
+                        new PersonView { Id = 3, Name = "ab" }
+                    }.ToExpectedObject()
+                     .ShouldEqual(persons);
+        }
+
+        [Fact]
+        public void QueryRepository_FromSql()
+        {
+            GivenPersonView();
+            
+            GivenPersonData();
+
+            var person = _unitOfWork.GetViewRepository<PersonView>()
+                                    .FromSql($"select * from PersonView where id = {1}")
+                                    .FirstOrDefault();
+
+            person.Id.Should().Be(1);
+
+            person = _unitOfWork.GetViewRepository<PersonView>()
+                                .FromSql("select * from PersonView where id = @id", new SqliteParameter("id", 1))
+                                .FirstOrDefault();
+
+            person.Id.Should().Be(1);
+        }
+
+        private void GivenPersonView()
+        {
+            _unitOfWork.ExecuteSqlCommand(@"Create View PersonView AS 
+                                            select Id, Name from Person");
+            _unitOfWork.Commit();
+        }
+
         private void GivenPersonData()
         {
             _unitOfWork.GetRepository<Person>().Insert(Persons());
@@ -515,27 +568,27 @@ namespace Baymax.Tests.Entity
                 }
             };
         }
-        
+
         private ITestUnitOfWork GivenUnitOfWork(Func<object, ValidationResult> checkFunc)
         {
             var unitOfWork = new ServiceCollection()
-                          .AddDbContext<TestDbContext>(options =>
-                          {
-                              options.UseSqlite("DataSource=:memory:", x =>
-                              {
-                              });
-                          })
-                          .AddEntityValidation<Person>(checkFunc)
-                          .AddScoped<ITestUnitOfWork, TestUnitOfWork>()
-                          .BuildServiceProvider()
-                          .GetRequiredService<ITestUnitOfWork>();
+                             .AddDbContext<TestDbContext>(options =>
+                             {
+                                 options.UseSqlite("DataSource=:memory:", x =>
+                                 {
+                                 });
+                             })
+                             .AddEntityValidation<Person>(checkFunc)
+                             .AddScoped<ITestUnitOfWork, TestUnitOfWork>()
+                             .BuildServiceProvider()
+                             .GetRequiredService<ITestUnitOfWork>();
 
             unitOfWork.DbContext.Database.OpenConnection();
             unitOfWork.DbContext.Database.EnsureCreated();
 
             return unitOfWork;
         }
-        
+
         private ITestUnitOfWork GivenUnitOfWorkWithEntityValidation()
         {
             ValidationResult CheckFunc(object o)

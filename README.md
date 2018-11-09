@@ -30,7 +30,10 @@
     - [Insert & InsertAsync](#insert--insertasync)
     - [Update](#update)
     - [Delete](#delete)
-
+- [ViewRepository](#viewrepository) 
+    - [GetAll](#getall-1)
+    - [FromSql](#fromsql-1)
+    
 ---
  
 ## Config
@@ -151,7 +154,6 @@ public TestConfig : IConfig
 ```
 
 ---
-
 
 ## Log
 
@@ -453,19 +455,19 @@ public class IndexController : Controller
 使用 DbContext 就可以拿到 DbContext 的實體 
 
 ```csharp
-    var db = unitOfWork.DbContext; 
+var db = unitOfWork.DbContext; 
 ```
 
 使用 GetRepository 並傳入 DbSet 的 class 當泛型參數就可以拿到 IBaymaxRepository<>
 
 ```csharp
-    var repo = unitOfWork.GetRepository<Person>();
+var repo = unitOfWork.GetRepository<Person>();
 ```
 
 使用 GetViewRepository 並傳入 DbQuery 的 class 當泛型參數就可以拿到 IBaymaxQueryRepository<>  
 
 ```csharp
-    var repoView = unitOfWork.GetViewRepository<PersonView>();
+var repoView = unitOfWork.GetViewRepository<PersonView>();
 ```
 
 > 需注意如果 DbSet 和 DbQuery 的 class 沒有繼承相對應的 class 在裡會報錯
@@ -475,8 +477,8 @@ public class IndexController : Controller
 原本 DBContext 的 SaveChange，有同步和非同步的方法
 
 ```csharp
-    unitOfWork.Commit();
-    unitOfWork.CommitAsync();
+unitOfWork.Commit();
+unitOfWork.CommitAsync();
 ```
 
 ### ExecuteSqlCommand
@@ -484,9 +486,9 @@ public class IndexController : Controller
 UnitOfWork 可以直接執行原始 SQL 語句，可以使用字串內插的方式或是使用 Parameter 的方式傳參數
 
 ```csharp
-    unitOfWork.ExecuteSqlCommand($"delete from Phone where id = {1}");
+unitOfWork.ExecuteSqlCommand($"delete from Phone where id = {1}");
 
-    unitOfWork.ExecuteSqlCommand("delete from Phone where id = @id", new SqlParameter("id", 1));
+unitOfWork.ExecuteSqlCommand("delete from Phone where id = @id", new SqlParameter("id", 1));
 ```
 
 ### Entity Validation
@@ -519,16 +521,15 @@ public void ConfigureServices(IServiceCollection services)
 裡面的 Exception，會有所有 Entity 的 ValidationException
 
 ```csharp
-    try
-    {
-        unitOfWork.Commit();
-    }
-    catch (EntityValidationException ex)
-    {
-         List<ValidationException> validationExceptions = ex.Exceptions;
-    }
+try
+{
+    unitOfWork.Commit();
+}
+catch (EntityValidationException ex)
+{
+     List<ValidationException> validationExceptions = ex.Exceptions;
+}
 ```
-
 
 ## Repository
 
@@ -547,16 +548,16 @@ public void ConfigureServices(IServiceCollection services)
 基本上所有的參數都有預設值 (selector 除外)，建議使用具名引數的方式來呼叫
 
 ```csharp
-  repo.GetFirstOrDefault(selector: a => a.Name,
-                         predicate: a => a.Id == 2,
-                         orderBy: a => a.OrderBy(b => b.Id),
-                         include: a => a.Include(b => b.Phones),
-                         disableTracking: true);
-                         
-  repo.GetFirstOrDefault(predicate: a => a.Id == 1,
-                         orderBy: a => a.OrderBy(b => b.Id),
-                         include: a => a.Include(b => b.Phones),
-                         disableTracking: true);
+repo.GetFirstOrDefault(selector: a => a.Name,
+                     predicate: a => a.Id == 2,
+                     orderBy: a => a.OrderBy(b => b.Id),
+                     include: a => a.Include(b => b.Phones),
+                     disableTracking: true);
+                     
+repo.GetFirstOrDefault(predicate: a => a.Id == 1,
+                     orderBy: a => a.OrderBy(b => b.Id),
+                     include: a => a.Include(b => b.Phones),
+                     disableTracking: true);
 ```
 
 ### GetAll
@@ -564,16 +565,16 @@ public void ConfigureServices(IServiceCollection services)
 有兩個多載，使用方法同 GetFirstOrDefault，返回型態為 IQueryable
 
 ```csharp
-  repo.GetAll(selector: a => a.Name,
-              predicate: a => a.Id > 1,
-              orderBy: a => a.OrderBy(b => b.Id),
-              include: a => a.Include(b => b.Phones),
-              disableTracking: true);
-                         
-  repo.GetAll(predicate: a => a.Id == 1,
-              orderBy: a => a.OrderBy(b => b.Id),
-              include: a => a.Include(b => b.Phones),
-              disableTracking: true);
+repo.GetAll(selector: a => a.Name,
+          predicate: a => a.Id > 1,
+          orderBy: a => a.OrderBy(b => b.Id),
+          include: a => a.Include(b => b.Phones),
+          disableTracking: true);
+                     
+repo.GetAll(predicate: a => a.Id == 1,
+          orderBy: a => a.OrderBy(b => b.Id),
+          include: a => a.Include(b => b.Phones),
+          disableTracking: true);
 ```
 
 ### GetPagedList & GetPagedListAsync
@@ -582,43 +583,43 @@ public void ConfigureServices(IServiceCollection services)
 PageIndex 從 0 開始，預設 PageSize 為 20
 
 ```csharp
-  repo.GetPagedList(selector: a => a.Name,
-                    predicate: a => a.Id > 1,
-                    orderBy: a => a.OrderBy(b => b.Id),
-                    include: a => a.Include(b => b.Phones),
-                    pageIndex = 0, 
-                    pageSize = 10, 
-                    disableTracking: true);
-                         
-  repo.GetPagedList(predicate: a => a.Id > 1,
-                    orderBy: a => a.OrderBy(b => b.Id),
-                    include: a => a.Include(b => b.Phones),
-                    pageIndex = 0, 
-                    pageSize = 10, 
-                    disableTracking: true);
+repo.GetPagedList(selector: a => a.Name,
+                predicate: a => a.Id > 1,
+                orderBy: a => a.OrderBy(b => b.Id),
+                include: a => a.Include(b => b.Phones),
+                pageIndex = 0, 
+                pageSize = 10, 
+                disableTracking: true);
+                     
+repo.GetPagedList(predicate: a => a.Id > 1,
+                orderBy: a => a.OrderBy(b => b.Id),
+                include: a => a.Include(b => b.Phones),
+                pageIndex = 0, 
+                pageSize = 10, 
+                disableTracking: true);
 ```
 
 返回型態為 IPagedList<TResult>，資料在 Items 裡面
 
 ```csharp
-    public interface IPagedList<T>
-    {
-        int IndexFrom { get; } 
+public interface IPagedList<T>
+{
+    int IndexFrom { get; } 
 
-        int PageIndex { get; } 
+    int PageIndex { get; } 
 
-        int PageSize { get; } 
+    int PageSize { get; } 
 
-        int TotalCount { get; }
+    int TotalCount { get; }
 
-        int TotalPages { get; }
+    int TotalPages { get; }
 
-        IList<T> Items { get; }
+    IList<T> Items { get; }
 
-        bool HasPreviousPage { get; }
+    bool HasPreviousPage { get; }
 
-        bool HasNextPage { get; }
-    }
+    bool HasNextPage { get; }
+}
 ```
 
 ### Find
@@ -626,9 +627,9 @@ PageIndex 從 0 開始，預設 PageSize 為 20
 傳入參數為 Key (Async 方法使用相同)
 
 ```csharp
-    repo.Find(1);
-    
-    repo.Find(1, "key");
+repo.Find(1);
+
+repo.Find(1, "key");
 ```
 
 ### Count
@@ -636,9 +637,9 @@ PageIndex 從 0 開始，預設 PageSize 為 20
 可以傳入 Predicate，取得數量
 
 ```csharp
-    repo.Count();
-    
-    repo.Count(a => a.Id > 1);
+repo.Count();
+
+repo.Count(a => a.Id > 1);
 ```
 
 ### Any
@@ -646,19 +647,20 @@ PageIndex 從 0 開始，預設 PageSize 為 20
 可以傳入 Predicate，取得是否有資料
 
 ```csharp
-    repo.Any();
-    
-    repo.Any(a => a.Id > 1);
+repo.Any();
+
+repo.Any(a => a.Id > 1);
 ```
 
 ### FromSql
 
-原始 SQL 語句，可以使用字串內插的方式或是使用 Parameter 的方式傳參數
+執行原始 SQL 語句，有兩個多載，可以使用字串內插的方式或是使用 Parameter 的方式傳參數
+
 
 ```csharp
-    repo.FromSql($"select * from Person where id = {1}");
+repo.FromSql($"select * from Person where id = {1}");
 
-    repo.FromSql("select * from Person where id = @id", new SqlParameter("id", 1));
+repo.FromSql("select * from Person where id = @id", new SqlParameter("id", 1));
 ```
 
 ### Insert & InsertAsync
@@ -666,15 +668,15 @@ PageIndex 從 0 開始，預設 PageSize 為 20
 有三個多載，可以傳入單一 Entity、多筆 Entity 或是一個集合 (Async 方法使用相同)
 
 ```csharp
-    repo.Insert(new Person { Id = 1, Name = "a" });
+repo.Insert(new Person { Id = 1, Name = "a" });
 
-    repo.Insert(new Person { Id = 2, Name = "b" }, new Person { Id = 3, Name = "c" });
+repo.Insert(new Person { Id = 2, Name = "b" }, new Person { Id = 3, Name = "c" });
 
-    repo.Insert(new List<Person>
-    {
-        new Person { Id = 4, Name = "d" },
-        new Person { Id = 5, Name = "e" }
-    });
+repo.Insert(new List<Person>
+{
+    new Person { Id = 4, Name = "d" },
+    new Person { Id = 5, Name = "e" }
+});
 ```
 
 ### Update 
@@ -682,16 +684,16 @@ PageIndex 從 0 開始，預設 PageSize 為 20
 有三個多載，可以傳入單一 Entity、多筆 Entity 或是一個集合 
 
 ```csharp
-    var persons = repo.GetAll();
-    
-    persons[0].Name = "123";
-    persons[1].Name = "456";
-    
-    repo.Update(persons[0]);
+var persons = repo.GetAll();
 
-    repo.Update(persons[0], person[1]);
+persons[0].Name = "123";
+persons[1].Name = "456";
 
-    repo.Insert(persons);
+repo.Update(persons[0]);
+
+repo.Update(persons[0], person[1]);
+
+repo.Insert(persons);
 ```
 
 ### Delete
@@ -699,21 +701,45 @@ PageIndex 從 0 開始，預設 PageSize 為 20
 有四個多載，可以傳入 Entity 的 Key、單一 Entity、多筆 Entity 或是一個集合 
 
 ```csharp
-    var persons = repo.GetAll();
-    
-    persons[0].Name = "123";
-    persons[1].Name = "456";
-    
-    repo.Delete(1);
-    
-    repo.Delete(persons[0]);
+var persons = repo.GetAll();
 
-    repo.Delete(persons[0], person[1]);
+persons[0].Name = "123";
+persons[1].Name = "456";
 
-    repo.Delete(persons);
+repo.Delete(1);
 
+repo.Delete(persons[0]);
+
+repo.Delete(persons[0], person[1]);
+
+repo.Delete(persons);
 ```
 
+## ViewRepository
 
+> 基本上和 Repository 一樣，只是給 View 使用 
 
+### GetAll
 
+有兩個多載，使用方法同 Repository，只是少了 include 的參數 
+
+```csharp
+repo.GetAll(selector: a => a.Name,
+          predicate: a => a.Id > 1,
+          orderBy: a => a.OrderBy(b => b.Id),
+          disableTracking: true);
+                     
+repo.GetAll(predicate: a => a.Id == 1,
+          orderBy: a => a.OrderBy(b => b.Id),
+          disableTracking: true);
+```
+
+### FromSql
+
+執行原始 SQL 語句，有兩個多載，可以使用字串內插的方式或是使用 Parameter 的方式傳參數，使用方法同 Repository
+
+```csharp
+repo.FromSql($"select * from PersonView where id = {1}");
+
+repo.FromSql("select * from PersonView where id = @id", new SqlParameter("id", 1));
+```
