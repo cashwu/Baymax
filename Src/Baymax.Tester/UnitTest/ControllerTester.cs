@@ -8,7 +8,7 @@ namespace Baymax.Tester.UnitTest
     {
         private readonly TController _controller;
 
-        public ControllerTester(TController controller)
+        internal ControllerTester(TController controller)
         {
             _controller = controller;
         }

@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B150F597
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Baymax.Tester", "Src\Baymax.Tester\Baymax.Tester.csproj", "{D37CADC7-4F93-4D89-8435-A2D44C048B0D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Baymax.Tester.Tests", "Tests\Baymax.Tester.Tests\Baymax.Tester.Tests.csproj", "{02DF6B02-7733-4BCE-AED5-5B01BB33DCB5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{D37CADC7-4F93-4D89-8435-A2D44C048B0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D37CADC7-4F93-4D89-8435-A2D44C048B0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D37CADC7-4F93-4D89-8435-A2D44C048B0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02DF6B02-7733-4BCE-AED5-5B01BB33DCB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02DF6B02-7733-4BCE-AED5-5B01BB33DCB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02DF6B02-7733-4BCE-AED5-5B01BB33DCB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02DF6B02-7733-4BCE-AED5-5B01BB33DCB5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,5 +48,6 @@ Global
 		{5631BD01-50EB-4457-9068-3F602EEBC410} = {38B41F17-AF4A-4034-A507-37479A1E3A3F}
 		{DA771DB4-4A20-4FD7-967E-6DFC991D5785} = {B150F597-DFA9-4902-A2CD-56C89AFD3EBE}
 		{D37CADC7-4F93-4D89-8435-A2D44C048B0D} = {38B41F17-AF4A-4034-A507-37479A1E3A3F}
+		{02DF6B02-7733-4BCE-AED5-5B01BB33DCB5} = {B150F597-DFA9-4902-A2CD-56C89AFD3EBE}
 	EndGlobalSection
 EndGlobal
