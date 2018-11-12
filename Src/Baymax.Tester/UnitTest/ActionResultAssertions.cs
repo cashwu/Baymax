@@ -89,7 +89,7 @@ namespace Baymax.Tester.UnitTest
             return new CreatedAtActionResultAssertions(_actionResult as CreatedAtActionResult);
         }
         
-        public CreatedAtRouteResultAssertions ShouldCreatedAtRouteResult()
+        public CreatedAtRouteResultAssertions ShouldBeCreatedAtRouteResult()
         {
             _actionResult.Should().BeOfType<CreatedAtRouteResult>();
             
