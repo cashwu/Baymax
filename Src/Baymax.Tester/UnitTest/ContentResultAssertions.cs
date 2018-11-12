@@ -18,5 +18,12 @@ namespace Baymax.Tester.UnitTest
 
             return this;
         }
+
+        public ContentResultAssertions WithContentType(string expectedContentType)
+        {
+            _contentResult.ContentType.Should().Be(expectedContentType);
+
+            return this;
+        }
     }
 }
