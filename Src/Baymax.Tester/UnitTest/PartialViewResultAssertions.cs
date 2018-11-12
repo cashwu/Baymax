@@ -31,12 +31,12 @@ namespace Baymax.Tester.UnitTest
         
         public PartialViewResultAssertions<TController> WithDefaultViewName()
         {
-            _partialViewResult.ViewName.Should().BeEmpty();
+            _partialViewResult.ViewName.Should().BeNull();
 
             return this;
         }
 
-        public PartialViewResultAssertions<TController> WithViewBag(string key, object expectedValue)
+        public PartialViewResultAssertions<TController> WithViewBagOrViewData(string key, object expectedValue)
         {
             expectedValue.ToExpectedObject().ShouldEqual(_partialViewResult.ViewData[key]);
 
@@ -45,7 +45,7 @@ namespace Baymax.Tester.UnitTest
 
         public PartialViewResultAssertions<TController> WithNotTempData()
         {
-            _partialViewResult.TempData.Count.Should().Be(0);
+            _partialViewResult.TempData.Should().BeNull();
 
             return this;
         }
