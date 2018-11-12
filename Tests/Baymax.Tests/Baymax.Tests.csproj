@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ExpectedObjects" Version="2.3.4" />
-    <PackageReference Include="FluentAssertions" Version="5.4.2" />
+    <PackageReference Include="FluentAssertions" Version="5.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.1.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.1.4" />
