@@ -17,4 +17,12 @@
       <ProjectReference Include="..\..\Src\Baymax.Tester\Baymax.Tester.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="Pages\PartialViewResult\Action2.cshtml" />
+      <Content Include="Pages\PartialViewResult\PartialViewName.cshtml" />
+      <Content Include="Pages\ViewResult\Action2.cshtml" />
+      <Content Include="Pages\ViewResult\Action4.cshtml" />
+      <Content Include="Pages\ViewResult\ViewName.cshtml" />
+    </ItemGroup>
+
 </Project>
