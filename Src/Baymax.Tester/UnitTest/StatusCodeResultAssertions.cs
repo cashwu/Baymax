@@ -12,9 +12,9 @@ namespace Baymax.Tester.UnitTest
             _statusCodeResult = statusCodeResult;
         }
 
-        public StatusCodeResultAssertions<TController> WithStatusCode(int expectedStatudCode)
+        public StatusCodeResultAssertions<TController> WithStatusCode(int expectedStatusCode)
         {
-            _statusCodeResult.StatusCode.Should().Be(expectedStatudCode);
+            _statusCodeResult.StatusCode.Should().Be(expectedStatusCode);
             
             return this;
         }
