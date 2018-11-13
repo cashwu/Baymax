@@ -15,7 +15,7 @@ namespace Baymax.Tester.UnitTest
 
         public ViewResultAssertions<TController> WithModel<T>(T expected)
         {
-            _viewResult.Model.Should().BeAssignableTo<T>();
+            _viewResult.Model.Should().BeOfType<T>();
 
             expected.ToExpectedObject().ShouldEqual(_viewResult.Model);
 
@@ -28,13 +28,6 @@ namespace Baymax.Tester.UnitTest
 
             return this;
         }
-        
-        public ViewResultAssertions<TController> WithDefaultViewName()
-        {
-            _viewResult.ViewName.Should().BeEmpty();
-
-            return this;
-        }
 
         public ViewResultAssertions<TController> WithViewBag(string key, object expectedValue)
         {
@@ -43,9 +36,16 @@ namespace Baymax.Tester.UnitTest
             return this;
         }
 
+        public ViewResultAssertions<TController> WithViewData(string key, object expectedValue)
+        {
+            expectedValue.ToExpectedObject().ShouldEqual(_viewResult.ViewData[key]);
+
+            return this;
+        }
+        
         public ViewResultAssertions<TController> WithNotTempData()
         {
-            _viewResult.TempData.Count.Should().Be(0);
+            _viewResult.TempData.Should().BeNull();
 
             return this;
         }
