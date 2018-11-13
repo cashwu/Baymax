@@ -31,10 +31,17 @@ namespace Baymax.Tester.UnitTest
         public RedirectToActionResultAssertions<TController> WithRouteValue(string key, object expectedValue)
         {
             _actionResult.RouteValues[key].Should().Be(expectedValue);
-
+            
             return this;
         }
 
+        public RedirectToActionResultAssertions<TController> WithFragment(string expectedFragment)
+        {
+            _actionResult.Fragment.Should().Be(expectedFragment);
+
+            return this;
+        }
+        
         public RedirectToActionResultAssertions<TController> WithTempData(string key, object expectedValue)
         {
             _controller.TempData[key].Should().Be(expectedValue);
@@ -44,8 +51,22 @@ namespace Baymax.Tester.UnitTest
 
         public RedirectToActionResultAssertions<TController> WithNotTempData()
         {
-            _controller.TempData.Count.Should().Be(0);
+            _controller.TempData.Should().BeNull();
 
+            return this;
+        }
+
+        public RedirectToActionResultAssertions<TController> WithPermanent(bool expectedPermanent)
+        {
+            _actionResult.Permanent.Should().Be(expectedPermanent);
+            
+            return this;
+        }
+
+        public RedirectToActionResultAssertions<TController> WithPreserveMethod(bool expectedPreserveMethod)
+        {
+            _actionResult.PreserveMethod.Should().Be(expectedPreserveMethod);
+            
             return this;
         }
     }
