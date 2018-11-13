@@ -20,7 +20,7 @@ namespace Baymax.Tester.UnitTest
 
         public ActionResultAssertions<TController> Action(Func<TController, Task<IActionResult>> func)
         {
-            var result = func?.Invoke(_controller).Result;
+            var result = func?.Invoke(_controller).GetAwaiter().GetResult();
 
             return new ActionResultAssertions<TController>(result, _controller);
         }

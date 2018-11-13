@@ -25,5 +25,13 @@ namespace Baymax.Tester.UnitTest
 
             return this;
         }
+        
+        
+        public RedirectResultAssertions<TController> WithPreserveMethod(bool expectedPreserveMethod)
+        {
+            _redirectResult.PreserveMethod.Should().Be(expectedPreserveMethod);
+
+            return this;
+        }
     }
 }
