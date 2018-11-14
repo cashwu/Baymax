@@ -45,7 +45,7 @@ namespace Baymax.Tester.Tests.UnitTest
         }
     }
 
-    internal class CreatedAtActionResultController : Controller
+    public class CreatedAtActionResultController : Controller
     {
         public IActionResult Action()
         {

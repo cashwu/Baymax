@@ -29,7 +29,7 @@ namespace Baymax.Tester.Tests.UnitTest
         }
     }
 
-    internal class ContentResultController : Controller
+    public class ContentResultController : Controller
     {
         public IActionResult Action()
         {

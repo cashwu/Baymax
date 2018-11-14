@@ -28,11 +28,9 @@ namespace Baymax.Tester.Tests.UnitTest
                     .WithLocation("location")
                     .WithValue(new { Id = 1 });
         }
-        
-       
     }
 
-    internal class AcceptedResultController : Controller
+    public class AcceptedResultController : Controller
     {
         public IActionResult Action()
         {

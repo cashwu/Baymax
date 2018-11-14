@@ -18,7 +18,7 @@ namespace Baymax.Tester.Tests.UnitTest
         }
     }
 
-    internal class StatusCodeResultController : Controller
+    public class StatusCodeResultController : Controller
     {
         public IActionResult Action()
         {
