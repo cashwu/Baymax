@@ -14,7 +14,7 @@ namespace Baymax.Tester.Web.Controllers
         {
             _dbContext = dbContext;
         }
-        
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<Info>> Get()
@@ -23,29 +23,94 @@ namespace Baymax.Tester.Web.Controllers
             return result;
         }
 
-        // GET api/values/5
         [HttpGet("{id}")]
         public ActionResult<string> Get(int id)
         {
             return "value";
         }
 
-        // POST api/values
+        [Route("/api/post")]
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post([FromBody] Info info)
         {
+            _dbContext.Add(info);
+            _dbContext.SaveChanges();
+
+            return Ok(new PostRespDto { Id = info.Id });
+        }
+        
+        [Route("/api/post1")]
+        [HttpPost]
+        public IActionResult Post()
+        {
+            return Ok(new PostRespDto { Id = 999 });
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        [Route("/api/put/{id}")]
+        public IActionResult Put(int id, [FromBody] Info info)
         {
+            var existInfo = _dbContext.Info.FirstOrDefault(a => a.Id == id);
+
+            if (existInfo == null)
+            {
+                return NotFound();
+            }
+
+            existInfo.Name = info.Name;
+            _dbContext.Info.Update(existInfo);
+            _dbContext.SaveChanges();
+
+            return Ok(new PutRespDto { Id = info.Id });
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [Route("/api/delete/{id}")]
+        [HttpDelete]
+        public IActionResult Delete(int id)
         {
+            var existInfo = _dbContext.Info.FirstOrDefault(a => a.Id == id);
+
+            if (existInfo == null)
+            {
+                return NotFound();
+            }
+
+            _dbContext.Info.Remove(existInfo);
+            _dbContext.SaveChanges();
+
+            return NoContent();
         }
+        
+        [Route("/api/delete1/{id}")]
+        [HttpDelete]
+        public IActionResult Delete2(int id)
+        {
+            var existInfo = _dbContext.Info.FirstOrDefault(a => a.Id == id);
+
+            if (existInfo == null)
+            {
+                return NotFound();
+            }
+
+            _dbContext.Info.Remove(existInfo);
+            _dbContext.SaveChanges();
+
+            return Ok(new DeleteRespDto { Id = id });
+        }
+    }
+
+    public class DeleteRespDto
+    {
+        public int Id { get; set; }
+    }
+
+    public class PutRespDto
+    {
+        public int Id { get; set; }
+    }
+
+    public class PostRespDto
+    {
+        public int Id { get; set; }
     }
 }
