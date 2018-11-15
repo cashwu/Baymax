@@ -43,7 +43,7 @@ namespace Baymax.Tester.Tests.UnitTest
         }
     }
 
-    internal class RedirectResultController : Controller
+    public class RedirectResultController : Controller
     {
         public IActionResult Action()
         {

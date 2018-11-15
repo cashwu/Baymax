@@ -7,6 +7,7 @@ using Baymax.Services.Interface;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using Timer = System.Timers.Timer;
 
 [assembly: InternalsVisibleTo("Baymax.Tests")]
@@ -16,13 +17,16 @@ namespace Baymax.Services
     internal sealed class BaymaxBackgroundService<T> : IHostedService, IDisposable where T : IBackgroundProcessService
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IHostingEnvironment _env;
         private readonly Timer _timer;
         private readonly int _interval;
 
-        public BaymaxBackgroundService(IConfiguration configuration, IServiceProvider serviceProvider)
+        public BaymaxBackgroundService(IConfiguration configuration, IServiceProvider serviceProvider, IHostingEnvironment env)
         {
             _serviceProvider = serviceProvider;
-            _interval = configuration[$"BackgroundService:{typeof(T).Name}Interval"].ToInt();
+            _env = env;
+
+            _interval = configuration[$"BackgroundService:{typeof(T).Name}Interval"].ToInt(0);
 
             if (_interval > 0)
             {
@@ -32,6 +36,11 @@ namespace Baymax.Services
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            if (_env.IsTest())
+            {
+                return Task.CompletedTask;
+            }
+
             if (_timer != null)
             {
                 _timer.Enabled = true;
@@ -47,6 +56,11 @@ namespace Baymax.Services
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            if (_env.IsTest())
+            {
+                return Task.CompletedTask;
+            }
+
             if (_timer != null)
             {
                 _timer.Enabled = false;

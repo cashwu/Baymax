@@ -13,7 +13,7 @@ namespace Baymax.Tester.Tests.UnitTest
                     .AsTester()
                     .Action(c => c.Action())
                     .ShouldBeRedirectToActionResult()
-                    .WithAction("actionName")
+                    .WithAction("Action")
                     .WithNotTempData()
                     .WithPermanent(false)
                     .WithPreserveMethod(false);
@@ -26,8 +26,8 @@ namespace Baymax.Tester.Tests.UnitTest
                     .AsTester()
                     .Action(c => c.Action2())
                     .ShouldBeRedirectToActionResult()
-                    .WithAction("actionName")
-                    .WithController("controllerName");
+                    .WithAction("Action")
+                    .WithController("RedirectToActionResult");
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace Baymax.Tester.Tests.UnitTest
                     .AsTester()
                     .Action(c => c.Action3())
                     .ShouldBeRedirectToActionResult()
-                    .WithAction("actionName")
+                    .WithAction("Action")
                     .WithRouteValue("id", 1);
         }
         
@@ -48,8 +48,8 @@ namespace Baymax.Tester.Tests.UnitTest
                     .AsTester()
                     .Action(c => c.Action4())
                     .ShouldBeRedirectToActionResult()
-                    .WithAction("actionName")
-                    .WithController("controllerName")
+                    .WithAction("Action")
+                    .WithController("RedirectToActionResult")
                     .WithRouteValue("id", 1);
         }
         
@@ -60,8 +60,8 @@ namespace Baymax.Tester.Tests.UnitTest
                     .AsTester()
                     .Action(c => c.Action5())
                     .ShouldBeRedirectToActionResult()
-                    .WithAction("actionName")
-                    .WithController("controllerName")
+                    .WithAction("Action")
+                    .WithController("RedirectToActionResult")
                     .WithRouteValue("id", 1)
                     .WithFragment("fragment");
         }
@@ -73,8 +73,8 @@ namespace Baymax.Tester.Tests.UnitTest
                     .AsTester()
                     .Action(c => c.Action6())
                     .ShouldBeRedirectToActionResult()
-                    .WithAction("actionName")
-                    .WithController("controllerName")
+                    .WithAction("Action")
+                    .WithController("RedirectToActionResult")
                     .WithFragment("fragment");
         }
         
@@ -85,7 +85,7 @@ namespace Baymax.Tester.Tests.UnitTest
                     .AsTester()
                     .Action(c => c.Action7())
                     .ShouldBeRedirectToActionResult()
-                    .WithAction("actionName")
+                    .WithAction("Action")
                     .WithPermanent(true);
         }
         [Fact]
@@ -95,7 +95,7 @@ namespace Baymax.Tester.Tests.UnitTest
                     .AsTester()
                     .Action(c => c.Action8())
                     .ShouldBeRedirectToActionResult()
-                    .WithAction("actionName")
+                    .WithAction("Action")
                     .WithPreserveMethod(true);
         }
         
@@ -106,57 +106,57 @@ namespace Baymax.Tester.Tests.UnitTest
                     .AsTester()
                     .Action(c => c.Action9())
                     .ShouldBeRedirectToActionResult()
-                    .WithAction("actionName")
+                    .WithAction("Action")
                     .WithPermanent(true)
                     .WithPreserveMethod(true);
         }
     }
 
-    internal class RedirectToActionResultController : Controller
+    public class RedirectToActionResultController : Controller
     {
         public IActionResult Action()
         {
-            return RedirectToAction("actionName");
+            return RedirectToAction("Action");
         }
 
         public IActionResult Action2()
         {
-            return RedirectToAction("actionName", "controllerName");
+            return RedirectToAction("Action", "RedirectToActionResult");
         }
 
         public IActionResult Action3()
         {
-            return RedirectToAction("actionName", new { Id = 1 });
+            return RedirectToAction("Action", new { Id = 1 });
         }
         
         public IActionResult Action4()
         {
-            return RedirectToAction("actionName", "controllerName", new { Id = 1 });
+            return RedirectToAction("Action", "RedirectToActionResult", new { Id = 1 });
         }
         
         public IActionResult Action5()
         {
-            return RedirectToAction("actionName", "controllerName", new { Id = 1 }, "fragment");
+            return RedirectToAction("Action", "RedirectToActionResult", new { Id = 1 }, "fragment");
         }
         
         public IActionResult Action6()
         {
-            return RedirectToAction("actionName", "controllerName", "fragment");
+            return RedirectToAction("Action", "RedirectToActionResult", "fragment");
         }
 
         public IActionResult Action7()
         {
-            return RedirectToActionPermanent("actionName");
+            return RedirectToActionPermanent("Action");
         }
         
         public IActionResult Action8()
         {
-            return RedirectToActionPreserveMethod("actionName");
+            return RedirectToActionPreserveMethod("Action");
         }
         
         public IActionResult Action9()
         {
-            return RedirectToActionPermanentPreserveMethod("actionName");
+            return RedirectToActionPermanentPreserveMethod("Action");
         }
     }
 }

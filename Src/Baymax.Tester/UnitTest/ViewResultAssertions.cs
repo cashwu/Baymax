@@ -31,9 +31,7 @@ namespace Baymax.Tester.UnitTest
 
         public ViewResultAssertions<TController> WithViewBag(string key, object expectedValue)
         {
-            expectedValue.ToExpectedObject().ShouldEqual(_viewResult.ViewData[key]);
-
-            return this;
+            return WithViewData(key, expectedValue);
         }
 
         public ViewResultAssertions<TController> WithViewData(string key, object expectedValue)

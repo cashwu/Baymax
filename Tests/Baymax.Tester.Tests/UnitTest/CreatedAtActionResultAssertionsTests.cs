@@ -13,8 +13,8 @@ namespace Baymax.Tester.Tests.UnitTest
                     .AsTester()
                     .Action(c => c.Action())
                     .ShouldBeCreatedAtActionResult()
-                    .WithActionName("actionName")
-                    .WithControllerName("controllerName")
+                    .WithActionName("Action")
+                    .WithControllerName("CreatedAtActionResult")
                     .WithValue(new { data = 123 })
                     .WithRouteValue("Id", 1);
         }
@@ -26,7 +26,7 @@ namespace Baymax.Tester.Tests.UnitTest
                     .AsTester()
                     .Action(c => c.Action1())
                     .ShouldBeCreatedAtActionResult()
-                    .WithActionName("actionName")
+                    .WithActionName("Action")
                     .WithControllerName(null)
                     .WithValue(new { data = 123 });
         }
@@ -38,28 +38,28 @@ namespace Baymax.Tester.Tests.UnitTest
                     .AsTester()
                     .Action(c => c.Action3())
                     .ShouldBeCreatedAtActionResult()
-                    .WithActionName("actionName")
+                    .WithActionName("Action")
                     .WithControllerName(null)
                     .WithRouteValue("id", 1)
                     .WithValue(new { data = 123 });
         }
     }
 
-    internal class CreatedAtActionResultController : Controller
+    public class CreatedAtActionResultController : Controller
     {
         public IActionResult Action()
         {
-            return CreatedAtAction("actionName", "controllerName", new { Id = 1 }, new { data = 123 });
+            return CreatedAtAction("Action", "CreatedAtActionResult", new { Id = 1 }, new { data = 123 });
         }
 
         public IActionResult Action1()
         {
-            return CreatedAtAction("actionName", new { data = 123 });
+            return CreatedAtAction("Action", new { data = 123 });
         }
 
         public IActionResult Action3()
         {
-            return CreatedAtAction("actionName", new { Id = 1 }, new { data = 123 });
+            return CreatedAtAction("Action", new { Id = 1 }, new { data = 123 });
         }
     }
 }

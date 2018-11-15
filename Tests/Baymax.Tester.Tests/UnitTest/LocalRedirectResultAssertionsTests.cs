@@ -52,8 +52,8 @@ namespace Baymax.Tester.Tests.UnitTest
                     .WithPreserveMethod(true);
         }
     }
-    
-    internal class LocalRedirectResultController : Controller
+
+    public class LocalRedirectResultController : Controller
     {
         public IActionResult Action()
         {

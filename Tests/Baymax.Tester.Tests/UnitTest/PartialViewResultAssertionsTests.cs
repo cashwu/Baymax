@@ -55,7 +55,7 @@ namespace Baymax.Tester.Tests.UnitTest
         }
     }
 
-    internal class PartialViewResultController : Controller
+    public class PartialViewResultController : Controller
     {
         public IActionResult Action()
         {

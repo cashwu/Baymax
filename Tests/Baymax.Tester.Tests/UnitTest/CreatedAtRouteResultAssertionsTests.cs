@@ -31,7 +31,7 @@ namespace Baymax.Tester.Tests.UnitTest
         }
     }
 
-    internal class CreatedAtRoutedResultController : Controller
+    public class CreatedAtRoutedResultController : Controller
     {
         public IActionResult Action()
         {

@@ -23,9 +23,20 @@ namespace Baymax.Tester.Integration
             return httpResult.Content.ReadAsAsync<TResult>().Result;
         }
 
-        public static TResult PutHttpResult<TResult, TPostData>(this HttpClient httpClient, string url, TPostData postData)
+        public static TResult PutHttpResult<TResult, TPutData>(this HttpClient httpClient, string url, TPutData putData)
         {
-            var httpResult = httpClient.PutAsJsonAsync(url, postData).Result;
+            var httpResult = httpClient.PutAsJsonAsync(url, putData).Result;
+            return httpResult.Content.ReadAsAsync<TResult>().Result;
+        }
+
+        public static HttpResponseMessage DeleteHttpResult(this HttpClient httpClient, string url)
+        {
+            return httpClient.DeleteAsync(url).Result;
+        }
+        
+        public static TResult DeleteHttpResult<TResult>(this HttpClient httpClient, string url)
+        {
+            var httpResult = httpClient.DeleteAsync(url).Result;
             return httpResult.Content.ReadAsAsync<TResult>().Result;
         }
     }
