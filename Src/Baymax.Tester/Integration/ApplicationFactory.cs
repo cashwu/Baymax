@@ -18,7 +18,7 @@ namespace Baymax.Tester.Integration
             get => CreateClient(new WebApplicationFactoryClientOptions
             {
                 HandleCookies = true,
-                AllowAutoRedirect = true
+                AllowAutoRedirect = false
             });
         }
 

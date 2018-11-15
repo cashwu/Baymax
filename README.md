@@ -13,7 +13,7 @@
 [![Baymax.Tester Nuget](https://img.shields.io/badge/Nuget-Baymax.Tester-blue.svg)](https://www.nuget.org/packages/Baymax.Tester/)
 
 ---
-- Baymax
+- [Baymax](#baymax)
     - [Config](#config)
     - [Log](#log)
     - [Service](#service)
@@ -34,9 +34,12 @@
         - [GetAll](#getall-1)
         - [FromSql](#fromsql-1)
 
-- Baymax.Tester    
+- [Baymax.Tester](#baymaxtester)   
+    - [Integration Test](#integration-test) 
     
 ---
+
+# Baymax
  
 ## Config
 
@@ -749,3 +752,110 @@ repo.FromSql("select * from PersonView where id = @id", new SqlParameter("id", 1
 
 ---
 ---
+
+# Baymax.Tester
+
+## Integration Test
+
+> 可以讓你容昜的建立 Test Server 和 InMemoryDB 作測試
+
+## 建立 TestBase
+
+建立一個 class 去實作 IClassFixture，並傳入 ApplicationFactory 當泛型參數，
+而 ApplicationFactory 的泛型參數是你 Web App 的 Startup 和 DBContext 類別，
+constructor 需要注入 ApplicationFactory 並且建立一個 field 給外部 test class 使用
+
+> 在這裡是使用 xUnit test framework
+
+> 建立出來的測試 client EnvironmentName 為 Test，可以使用 IHostingEnvironmentExtensions 的 IsTest 來判斷
+    
+
+```csharp
+public class TestBase : IClassFixture<ApplicationFactory<Startup, AppDbContext>>
+{
+    protected readonly ApplicationFactory<Startup, AppDbContext> Factory;
+
+    public TestBase(ApplicationFactory<Startup, AppDbContext> factory)
+    {
+        Factory = factory;
+    }
+}
+```
+
+## DB Init Data
+
+ApplicationFactory 裡面有一個 InitDataEvent 可以使用，
+可以在 TestBase 的 constructor 註冊事件塞初始資料
+
+```csharp
+public TestBase(ApplicationFactory<Startup, AppDbContext> factory)
+{
+    Factory.InitDataEvent += OnInitDataEvent;
+}
+
+private void OnInitDataEvent(object sender, InitDataEventArgs<AppDbContext> e)
+{
+    var dbcontext = e.DbContext;
+    // insert data here
+    dbcontext.SaveChanges();
+}
+```
+
+## 使用 HttpClient
+
+test class 去繼承前面建立的 TestBase，並在 constructor 注入 ApplicationFactory
+
+```csharp
+public class WebTests : TestBase
+{
+    public WebTests(ApplicationFactory<Startup, AppDbContext> factory) : base(factory)
+    {
+    }
+}
+``` 
+
+在 Factory 裡面有 HttpClient 可以發送 http request 到網站，HttpClient 有基本的 Http Method Extension 可以讓你更方便的使用，
+需要注意的是 url 是不包含 host 
+
+- PostHttpResult
+- GetHttpResult
+- PutHttpResult
+- DeleteHttpResult
+
+> 更多的使用方式請參考 [測試](/Tests/Baymax.Tester.Tests/Integration/WebTests.cs) 
+
+```csharp
+[Fact]
+public void GetAll()
+{
+    var result = Factory.HttpClient.GetHttpResult<List<Info>>("/api/values");
+}
+```
+
+## 使用 DBContext
+
+在 Factory 裡面有 DbOperator method 可以使用，傳入參數為 DbContext 的 Action 
+
+> 在測試使用的是 InMemoryDatabase，所以有些 DB 的操作是不支援的
+
+```csharp
+Factory.DbOperator(db =>
+{
+    db.Info.Add(new Info { Id = 1, Name = "Test123" });
+    db.Info.Add(new Info { Id = 2, Name = "Test456" });
+    db.SaveChanges();
+});
+```
+
+## 取得其它類別
+
+使用 Factory 的 Operator method，傳入參數為泛型類別的 Action，
+例如有一個 RedisService
+
+```csharp
+Factor.Operator<RedisService>(redis => 
+{
+    // do something here
+});
+```
+
