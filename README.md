@@ -365,6 +365,7 @@ public void ConfigureServices(IServiceCollection services)
 無需寫任何程式碼，設定的時間周期就會定期執行
 
 > 需注意的是第一次註冊 BackgroundService 時就會執行一次程式碼
+> 而且不會在 Test 的 EnvironmentName 中執行
 
 ---
 

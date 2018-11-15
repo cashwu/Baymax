@@ -7,10 +7,12 @@ using Baymax.Extension;
 using Baymax.Services;
 using Baymax.Services.Interface;
 using FluentAssertions;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xunit;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Baymax.Tests.Services
 {
@@ -19,16 +21,33 @@ namespace Baymax.Tests.Services
         [Fact]
         public async Task DefaultRegister()
         {
-            var serviceProvider = new ServiceCollection()
-                                  .AddSingleton(GivenConfiguration())
-                                  .AddBackgroundService(typeof(TestBackgroundService))
-                                  .BuildServiceProvider();
+            var service = GivenServiceProvider("Prod").GetService<IHostedService>()
+                                  as BaymaxBackgroundService<TestBackgroundService>;
 
-            var service = serviceProvider.GetService<IHostedService>() as BaymaxBackgroundService<TestBackgroundService>;
+            TestBackgroundService.Init();
 
             await service.StartAsync(CancellationToken.None);
 
             TestBackgroundService.GetRun().Should().Be(1);
+
+            await service.StopAsync(CancellationToken.None);
+
+            TestBackgroundService.GetRun().Should().Be(-1);
+
+            service.Dispose();
+        }
+
+        [Fact]
+        public async Task TestEnv_NotRegister()
+        {
+            var service = GivenServiceProvider("Test").GetService<IHostedService>()
+                                  as BaymaxBackgroundService<TestBackgroundService>;
+
+            TestBackgroundService.Init();
+
+            await service.StartAsync(CancellationToken.None);
+
+            TestBackgroundService.GetRun().Should().Be(0);
 
             await service.StopAsync(CancellationToken.None);
 
@@ -59,6 +78,18 @@ namespace Baymax.Tests.Services
                   .Be("Not implement type IBackgroundProcessService");
         }
 
+        private ServiceProvider GivenServiceProvider(string environmentName)
+        {
+            return new ServiceCollection()
+                   .AddSingleton<IHostingEnvironment>(new HostingEnvironment
+                   {
+                       EnvironmentName = environmentName
+                   })
+                   .AddSingleton(GivenConfiguration())
+                   .AddBackgroundService(typeof(TestBackgroundService))
+                   .BuildServiceProvider();
+        }
+
         private IConfiguration GivenConfiguration()
         {
             return new ConfigurationBuilder()
@@ -84,6 +115,11 @@ namespace Baymax.Tests.Services
 
         private static int run;
 
+        public static void Init()
+        {
+            run = 0;
+        }
+
         public static int GetRun()
         {
             return run;
@@ -96,7 +132,7 @@ namespace Baymax.Tests.Services
 
         public void StopWork()
         {
-            run = 0;
+            run--;
         }
     }
 }
