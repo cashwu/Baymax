@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Baymax.Tester.UnitTest;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
@@ -27,6 +28,17 @@ namespace Baymax.Tester.Tests.UnitTest
                     .WithContent("abc")
                     .WithContentType("text/xml");
         }
+        
+        [Fact]
+        public void AsyncWithContent()
+        {
+            new ContentResultController()
+                    .AsTester()
+                    .Action(c => c.AsyncAction())
+                    .ShouldBeContentResult()
+                    .WithContent("Test")
+                    .WithContentType(null);
+        }
     }
 
     public class ContentResultController : Controller
@@ -39,6 +51,18 @@ namespace Baymax.Tester.Tests.UnitTest
         public IActionResult Action2()
         {
             return Content("abc", "text/xml");
+        }
+
+        public async Task<IActionResult> AsyncAction()
+        {
+            var result = await Download(); 
+            
+            return Content(result);
+        }
+
+        private async Task<string> Download()
+        {
+            return await Task.FromResult("Test");
         }
     }
 }

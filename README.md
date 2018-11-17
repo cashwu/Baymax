@@ -36,7 +36,7 @@
 
 - [Baymax.Tester](#baymaxtester)   
     - [Integration Test](#integration-test) 
-    
+    - [Unit Test](#unit-test) 
 ---
 
 # Baymax
@@ -759,7 +759,7 @@ repo.FromSql("select * from PersonView where id = @id", new SqlParameter("id", 1
 
 > 可以讓你容昜的建立 Test Server 和 InMemoryDB 作測試
 
-## 建立 TestBase
+### 建立 TestBase
 
 建立一個 class 去實作 IClassFixture，並傳入 ApplicationFactory 當泛型參數，
 而 ApplicationFactory 的泛型參數是你 Web App 的 Startup 和 DBContext 類別，
@@ -782,7 +782,7 @@ public class TestBase : IClassFixture<ApplicationFactory<Startup, AppDbContext>>
 }
 ```
 
-## DB Init Data
+### DB Init Data
 
 ApplicationFactory 裡面有一個 InitDataEvent 可以使用，
 可以在 TestBase 的 constructor 註冊事件塞初始資料
@@ -801,7 +801,7 @@ private void OnInitDataEvent(object sender, InitDataEventArgs<AppDbContext> e)
 }
 ```
 
-## 使用 HttpClient
+### 使用 HttpClient
 
 test class 去繼承前面建立的 TestBase，並在 constructor 注入 ApplicationFactory
 
@@ -832,7 +832,7 @@ public void GetAll()
 }
 ```
 
-## 使用 DBContext
+### 使用 DBContext
 
 在 Factory 裡面有 DbOperator method 可以使用，傳入參數為 DbContext 的 Action 
 
@@ -847,7 +847,7 @@ Factory.DbOperator(db =>
 });
 ```
 
-## 取得其它類別
+### 取得其它類別
 
 使用 Factory 的 Operator method，傳入參數為泛型類別的 Action，
 例如有一個 RedisService
@@ -859,3 +859,90 @@ Factor.Operator<RedisService>(redis =>
 });
 ```
 
+## Unit Test
+
+> 可以讓你使用 Fluent 的測試 controller 的 action 
+
+### 取得 Action 的執行結果 
+
+取得 controller 的實體之後使用擴充方法 `.AsTester()`，然後在用 Action 方法，
+傳入 Func 呼叫 controller 的 action 就可以拿到 action 的執行結果
+
+```csharp
+public class HomeController : Controller
+{
+    public IActionResult Index()
+    {
+        return View();
+    }
+}
+
+public class Test
+{
+    [Fact]
+    public void Test()
+    {
+        var result = new HomeController()
+                            .AsTester()
+                            .Action(c => c.Index());
+    }
+}
+```
+
+
+### 驗證 ActionResult
+
+取得結果後使用 `ShouldBeXXXResult` 就可以驗證 ActionResult 的型別，
+XXX 取決 Action 真實的返回結果，以下面的程式碼來說就是返回 ViewResult
+
+```csharp
+[Fact]
+public void Test()
+{
+    new HomeController()
+        .AsTester()
+        .Action(c => c.Index())
+        .ShouldBeViewResult();
+}
+
+> 支援非同步 ActionResult
+
+```
+
+### 驗證 ActionResult 裡面的屬性
+
+可以用 `WithXXX` 來驗證 ActionResult 的公開屬性，
+XXX 取決 ActionResult 的型別，以下面的程式碼來說 ViewResult 可以驗證
+ Model (WithModel)、ViewBag (WithViewBag)、ViewData (WithViewData) ...
+
+```csharp
+[Fact]
+public void Test()
+{
+    new HomeController()
+        .AsTester()
+        .Action(c => c.Index())
+        .ShouldBeViewResult();
+        .WithModel(new { id = 1 });
+        .WithViewBag("viewbag", 123)
+        .WithViewData("viewdata", 456) 
+}
+
+```
+
+### 目前支援的 ActionResult
+
+相關的用法可以參考 [測試](/Tests/Baymax.Tester.Tests/UnitTest)
+
+- AcceptedResult
+- CreatedAtActionResult
+- CreatedAtRoutedResult
+- JsonResult
+- RedirectResult
+- RedirectToActionResult
+- RedirectToRouteResult
+- LocalRedirectResult
+- PartialViewResult
+- ViewResult
+- StatusCodeResult
+- ContentResult
