@@ -12,18 +12,18 @@ namespace Baymax.Entity
 {
     public class BaymaxUnitOfWork<TDbContext> : IBaymaxUnitOfWork<TDbContext> where TDbContext : DbContext
     {
-        private readonly TDbContext _context;
+        protected TDbContext _DbContext;
         private Dictionary<Type, object> _repositories;
         private bool _disposed;
 
-        public BaymaxUnitOfWork(TDbContext context)
+        protected BaymaxUnitOfWork(TDbContext context)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _DbContext = context ?? throw new ArgumentNullException(nameof(context));
         }
 
         public virtual TDbContext DbContext
         {
-            get => _context;
+            get => _DbContext;
         }
 
         public virtual IBaymaxRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
@@ -36,7 +36,7 @@ namespace Baymax.Entity
             var type = typeof(TEntity);
             if (!_repositories.ContainsKey(type))
             {
-                _repositories[type] = new BaymaxRepository<TEntity>(_context);
+                _repositories[type] = new BaymaxRepository<TEntity>(_DbContext);
             }
 
             return (IBaymaxRepository<TEntity>) _repositories[type];
@@ -52,7 +52,7 @@ namespace Baymax.Entity
             var type = typeof(TEntity);
             if (!_repositories.ContainsKey(type))
             {
-                _repositories[type] = new BaymaxQueryRepository<TEntity>(_context);
+                _repositories[type] = new BaymaxQueryRepository<TEntity>(_DbContext);
             }
 
             return (IBaymaxQueryRepository<TEntity>) _repositories[type];
@@ -62,17 +62,17 @@ namespace Baymax.Entity
         {
             ValidateObject();
 
-            return _context.SaveChanges();
+            return _DbContext.SaveChanges();
         }
 
         public virtual Task<int> CommitAsync()
         {
-            return _context.SaveChangesAsync();
+            return _DbContext.SaveChangesAsync();
         }
 
         public virtual int ExecuteSqlCommand(string sql, params object[] parameters)
         {
-            return _context.Database.ExecuteSqlCommand(sql, parameters);
+            return _DbContext.Database.ExecuteSqlCommand(sql, parameters);
         }
 
         private void ValidateObject()
@@ -102,7 +102,7 @@ namespace Baymax.Entity
 
         private IEnumerable<object> GetEntitiesByState(Func<EntityEntry, bool> predicate)
         {
-            return _context.ChangeTracker.Entries()
+            return _DbContext.ChangeTracker.Entries()
                             .Where(predicate)
                             .Select(a => a.Entity);
         }
@@ -119,7 +119,7 @@ namespace Baymax.Entity
             if (!_disposed && disposing)
             {
                 _repositories?.Clear();
-                _context.Dispose();
+                _DbContext.Dispose();
             }
 
             _disposed = true;
