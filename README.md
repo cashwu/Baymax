@@ -861,7 +861,7 @@ Factor.Operator<RedisService>(redis =>
 
 ## Unit Test
 
-> 可以讓你使用 Fluent 的測試 controller 的 action 
+> 可以讓你使用 Fluent 的方式測試 controller 的 action 
 
 ### 取得 Action 的執行結果 
 
@@ -904,10 +904,9 @@ public void Test()
         .Action(c => c.Index())
         .ShouldBeViewResult();
 }
+```
 
 > 支援非同步 ActionResult
-
-```
 
 ### 驗證 ActionResult 裡面的屬性
 
