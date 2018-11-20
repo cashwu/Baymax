@@ -49,11 +49,11 @@ namespace Baymax.Extension
             return services;
         }
 
-        public static IServiceCollection AddLogService(this IServiceCollection services, string prefixAssemblyName = "")
+        public static IServiceCollection AddLogService(this IServiceCollection services, string prefixAssemblyName = "", ServiceLifetime lifetime = ServiceLifetime.Scoped)
         {
-            services.AddTypeOf<ILogBase>(prefixAssemblyName);
-            services.AddScoped<ILogService, LogService>();
-
+            services.AddTypeOf<ILogBase>(prefixAssemblyName, lifetime);
+            services.Add(new ServiceDescriptor(typeof(ILogService), typeof(LogService), lifetime));
+            
             return services;
         }
 
