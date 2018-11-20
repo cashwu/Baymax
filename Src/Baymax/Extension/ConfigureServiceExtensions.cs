@@ -11,7 +11,6 @@ using Baymax.Services.Interface;
 using Baymax.Util;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Baymax.Extension
 {
@@ -21,28 +20,6 @@ namespace Baymax.Extension
                 where TEntity : BaseEntity
         {
             EntityValidation.SetProcessRoutines(typeof(TEntity), checkFunc);
-            return services;
-        }
-
-        public static IServiceCollection AddBackgroundService(this IServiceCollection services, params Type[] type)
-        {
-            if (type.Length == 0)
-            {
-                throw new ArgumentNullException($"{nameof(type)}");
-            }
-            
-            foreach (var t in type)
-            {
-                var @interface = t.GetInterfaces().FirstOrDefault();
-                if (@interface == null || @interface != typeof(IBackgroundProcessService))
-                {
-                    throw new ArgumentException($"Not implement type {nameof(IBackgroundProcessService)}");
-                }
-
-                services.AddScoped(t);
-                services.AddSingleton(typeof(IHostedService), typeof(BaymaxBackgroundService<>).MakeGenericType(t));
-            }
-
             return services;
         }
 
@@ -112,11 +89,6 @@ namespace Baymax.Extension
             {
                 foreach (var @interface in @class.GetInterfaces().Where(a => typeNameCondition.Invoke(a.GetTypeInfo())))
                 {
-                    if (@interface == typeof(IBackgroundProcessService))
-                    {
-                        continue;
-                    }
-
                     var lifeTime = TypeServiceLifetime(customerServiceLifetime, @class);
 
                     services.Add(new ServiceDescriptor(@interface, @class.AsType(), lifeTime));
