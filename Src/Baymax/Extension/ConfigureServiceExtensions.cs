@@ -112,6 +112,11 @@ namespace Baymax.Extension
             {
                 foreach (var @interface in @class.GetInterfaces().Where(a => typeNameCondition.Invoke(a.GetTypeInfo())))
                 {
+                    if (@interface == typeof(IBackgroundProcessService))
+                    {
+                        continue;
+                    }
+                    
                     var lifeTime = TypeServiceLifetime(customerServiceLifetime, @class);
 
                     services.Add(new ServiceDescriptor(@interface, @class.AsType(), lifeTime));
