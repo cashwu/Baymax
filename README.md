@@ -17,6 +17,7 @@
     - [Config](#config)
     - [Log](#log)
     - [Service](#service)
+    - [BackgroundService](#backgroundservice)
     - [UnitOfWork](#unitofwork)
     - [Repository](#repository)
         - [GetFirstOrDefault & GetFirstOrDefaultAsync](#getfirstordefault--getfirstordefaultasync)
@@ -297,6 +298,76 @@ public void Index(){
     testService.handle();
 }
 ```
+
+---
+
+## BackgroundService
+
+> 可定期 (排程) 執行程式
+
+### 實作 IBackgroundProcessService
+
+把需要定期執行的程式碼寫在 DoWork，把停止時需要取消的程式碼寫在 StopWork
+
+> 有時 StopWork 不一定會有程式碼
+   
+```csharp
+public class TestBackgroundService : IBackgroundProcessService
+{
+    public TestBackgroundService()
+    {
+    }
+    
+    public void DoWork()
+    {
+    }
+
+    public void StopWork()
+    {
+    }
+}
+``` 
+
+### Config 
+
+在 config 裡面新增一個 BackgroundService 的區段，裡面的 KEY 就是實作 IBackgroundProcessService 的類別名稱，
+Value 就是需要定期執行的周期
+
+> 注意單位為 `毫秒`，以下面的程式為例就是 1 秒會執行一次
+
+```json
+{
+    "BackgroundService" : {
+        "TestBackgroundService" : 1000
+    }
+}
+```
+
+### 註冊
+
+在 service 註冊 BackgroundService，傳入實作 IBackgroundProcessService 的 type 當參數
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddBackgroundService(typeof(TestBackgroundService))
+}
+```
+
+可實作多個 IBackgroundProcessService 同時傳入
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddBackgroundService(typeof(TestBackgroundService1), typeof(TestBackgroundService2))
+}
+```
+
+### 使用
+
+無需寫任何程式碼，設定的時間周期就會定期執行，沒有設定時間的只會執行一次 DoWork 
+
+> 需注意的是第一次註冊 BackgroundService 時就會執行一次程式碼
 
 ---
 
