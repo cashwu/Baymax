@@ -7,49 +7,44 @@ namespace Baymax.Util
 {
     public abstract class Enumeration : IComparable
     {
-        private readonly int _value;
-        private readonly string _displayName;
-
         protected Enumeration()
         {
         }
 
         protected Enumeration(int value, string displayName)
         {
-            _value = value;
-            _displayName = displayName;
+            Value = value;
+            DisplayName = displayName;
         }
 
-        public int Value
+        public int Value { get; protected set; }
+
+        public string DisplayName { get; protected set; }
+
+        protected static IEnumerable<T> GetAll<T>() where T : Enumeration, new()
         {
-            get => _value;
+            return typeof(T).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+                            .Select(p => (T) p.GetValue(default(T)));
         }
 
-        public string DisplayName
+        protected static T FromValue<T>(int value) where T : Enumeration, new()
         {
-            get => _displayName;
+            return Parse<T>(item => item.Value == value);
+        }
+
+        protected static T FromDisplayName<T>(string displayName) where T : Enumeration, new()
+        {
+            return Parse<T>(item => string.Equals(item.DisplayName, displayName, StringComparison.OrdinalIgnoreCase));
+        }
+        
+        public int CompareTo(object obj)
+        {
+            return Value.CompareTo(((Enumeration) obj).Value);
         }
 
         public override string ToString()
         {
             return DisplayName;
-        }
-
-        public static IEnumerable<T> GetAll<T>() where T : Enumeration, new()
-        {
-            var type = typeof(T);
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
-
-            foreach (var info in fields)
-            {
-                var instance = new T();
-                var locatedValue = info.GetValue(instance) as T;
-
-                if (locatedValue != null)
-                {
-                    yield return locatedValue;
-                }
-            }
         }
 
         public override bool Equals(object obj)
@@ -61,50 +56,20 @@ namespace Baymax.Util
                 return false;
             }
 
-            var typeMatches = GetType().Equals(obj.GetType());
-            var valueMatches = _value.Equals(otherValue.Value);
+            var typeMatches = GetType() == obj.GetType();
+            var valueMatches = Value.Equals(otherValue.Value);
 
             return typeMatches && valueMatches;
         }
 
         public override int GetHashCode()
         {
-            return _value.GetHashCode();
+            return Value.GetHashCode();
         }
 
-        public static int AbsoluteDifference(Enumeration firstValue, Enumeration secondValue)
+        private static T Parse<T>(Func<T, bool> predicate) where T : Enumeration, new()
         {
-            var absoluteDifference = Math.Abs(firstValue.Value - secondValue.Value);
-            return absoluteDifference;
-        }
-
-        public static T FromValue<T>(int value) where T : Enumeration, new()
-        {
-            var matchingItem = parse<T, int>(value, "value", item => item.Value == value);
-            return matchingItem;
-        }
-
-        public static T FromDisplayName<T>(string displayName) where T : Enumeration, new()
-        {
-            var matchingItem = parse<T, string>(displayName, "display name", item => item.DisplayName == displayName);
-            return matchingItem;
-        }
-
-        private static T parse<T, K>(K value, string description, Func<T, bool> predicate) where T : Enumeration, new()
-        {
-            var matchingItem = GetAll<T>().FirstOrDefault(predicate);
-
-            if (matchingItem == null)
-            {
-                throw new ArgumentException($"'{value}' is not a valid {description} in {typeof(T)}");
-            }
-
-            return matchingItem;
-        }
-
-        public int CompareTo(object obj)
-        {
-            return Value.CompareTo(((Enumeration) obj).Value);
+            return GetAll<T>().FirstOrDefault(predicate);
         }
     }
 }

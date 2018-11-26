@@ -37,7 +37,7 @@ namespace Baymax.Model.Enum
         public static readonly EnumErrorStatus PERMISSION_DENIED
                 = new EnumErrorStatus(5, "You have no permission to operate");
 
-        private EnumErrorStatus()
+        public EnumErrorStatus()
         {
         }
 
@@ -48,19 +48,17 @@ namespace Baymax.Model.Enum
 
         public static IEnumerable<EnumErrorStatus> List()
         {
-            return new[]
-                    { FORMAT_INVALID, DATA_NOT_FOUND, DATA_EXISTED, DATA_INVALID, PERMISSION_DENIED };
+            return GetAll<EnumErrorStatus>();
         }
 
         public static EnumErrorStatus FromString(string statusString)
         {
-            return List()
-                    .FirstOrDefault(r => string.Equals(r.DisplayName, statusString, StringComparison.OrdinalIgnoreCase));
+            return FromDisplayName<EnumErrorStatus>(statusString);
         }
 
         public static EnumErrorStatus FromValue(int value)
         {
-            return List().FirstOrDefault(r => r.Value == value);
+            return FromValue<EnumErrorStatus>(value);
         }
     }
 }

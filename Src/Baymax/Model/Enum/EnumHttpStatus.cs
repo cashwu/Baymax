@@ -70,7 +70,7 @@ namespace Baymax.Model.Enum
         public static readonly EnumHttpStatus NO_CONTENT
                 = new EnumHttpStatus(204, "No Content");
 
-        private EnumHttpStatus()
+        public EnumHttpStatus()
         {
         }
 
