@@ -72,7 +72,7 @@ namespace Baymax.Tests.Util
         {
             EnumTest.A.Equals(EnumTest.B).Should().BeFalse();
         }
-
+        
         [Fact]
         public void Equal_true()
         {
