@@ -34,7 +34,7 @@
         - [GetAll](#getall-1)
         - [FromSql](#fromsql-1)
     - [Util](#util)
-        - [Enumeration](#ennumeration)
+        - [Enumeration](#enumeration)
 
 - [Baymax.Tester](#baymaxtester)   
     - [Integration Test](#integration-test) 
