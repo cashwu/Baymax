@@ -33,6 +33,8 @@
     - [ViewRepository](#viewrepository) 
         - [GetAll](#getall-1)
         - [FromSql](#fromsql-1)
+    - [Util](#util)
+        - [Enumeration](#enumeration)
 
 - [Baymax.Tester](#baymaxtester)   
     - [Integration Test](#integration-test) 
@@ -749,6 +751,107 @@ repo.FromSql($"select * from PersonView where id = {1}");
 repo.FromSql("select * from PersonView where id = @id", new SqlParameter("id", 1));
 ```
 
+
+## Util 
+
+### Enumeration
+
+> Enum Object
+
+#### 建立
+
+建立一個 Enum 物件去繼承 Enumeration，並傳入建立的物件當泛型參數
+
+```csharp
+public class EnumTest : Enumeration<EnumTest>
+{
+}
+```
+
+建立 `private` constructor，並傳入 value 和 displayName 兩個參數
+
+```csharp
+public class EnumTest : Enumeration<EnumTest>
+{
+    private EnumTest(int value, string displayName)
+            : base(value, displayName)
+    {
+    }
+}
+```
+
+建立 static field 當成 Enum 的內容，Value 就是 Enum 的值，DisplayName 就是 Enum 的名稱
+
+```csharp
+public class EnumTest : Enumeration<EnumTest>
+{
+    public static readonly EnumTest A = new EnumTest(1, "A");
+    public static readonly EnumTest B = new EnumTest(2, "B");
+
+    private EnumTest(int value, string displayName)
+            : base(value, displayName)
+    {
+    }
+}
+```
+
+#### 使用
+
+跟使用一般 Enum 一樣可以直接用物件點出
+
+```csharp
+var a = EnumTest.A;
+var b = EnumTest.B;
+```
+
+如果要拿到名稱或是值的話，可以使用 DisplayName 和 Value，ToString 也可以直接拿到 DisplayName
+
+```csharp
+var e = EnumTest.A;
+e.Value; // 1
+e.DisplayName; // "A"
+e.ToString(); // "A"
+```
+
+也可以使用 GetAll 拿到全部 Enum Object 的內容
+
+```csharp
+EnumTest.GetAll(); // IEnumerable<EnumTest>
+```
+
+#### 轉換
+
+可以透過名稱或是值來轉換成 Enum Object
+
+```csharp
+EnumTest.FromValue(1); // EnumTest.A
+EnumTest.FromDisplayName("A"); // EnumTest.A
+```
+
+#### 比較
+
+可以使用 Equals 或是 CompareTo 來比較是否相等
+
+```csharp
+EnumTest.A.Equals(EnumTest.B) // false
+EnumTest.A.CompareTo(EnumTest.A) // true
+```
+
+#### JsonConvert
+
+如果有使用 Json.NET 來 Convert Enum Object 的話，需要在屬性加上 `JsonConverter` 的 attribute，
+傳入的參數為 `typeof(EnumerationJsonCovert)`，這樣子 SerializeObject 或是 DeserializeObject 的內容才會正確
+
+```csharp
+public class Test
+{
+    public int Id { get; set; }
+
+    [JsonConverter(typeof(EnumerationJsonCovert))]
+    public EnumTest EnumTest { get; set; }
+}
+```
+
 ---
 ---
 
@@ -944,3 +1047,4 @@ public void Test()
 - ViewResult
 - StatusCodeResult
 - ContentResult
+

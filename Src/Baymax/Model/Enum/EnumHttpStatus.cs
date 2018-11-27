@@ -5,7 +5,7 @@ using Baymax.Util;
 
 namespace Baymax.Model.Enum
 {
-    public class EnumHttpStatus : Enumeration
+    public class EnumHttpStatus : Enumeration<EnumHttpStatus>
     {
         /// <summary>
         /// 400
@@ -70,28 +70,9 @@ namespace Baymax.Model.Enum
         public static readonly EnumHttpStatus NO_CONTENT
                 = new EnumHttpStatus(204, "No Content");
 
-        private EnumHttpStatus()
-        {
-        }
-
         private EnumHttpStatus(int value, string displayName)
                 : base(value, displayName)
         {
-        }
-
-        public static IEnumerable<EnumHttpStatus> List()
-        {
-            return new[] { BAD_REQUEST, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, INTERNAL_SERVER_ERROR, SERVICE_UNAVAILABLE };
-        }
-
-        public static EnumHttpStatus FromString(string statusString)
-        {
-            return List().FirstOrDefault(r => String.Equals(r.DisplayName, statusString, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public static EnumHttpStatus FromValue(int value)
-        {
-            return List().FirstOrDefault(r => r.Value == value);
         }
     }
 }

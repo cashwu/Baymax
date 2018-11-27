@@ -5,7 +5,7 @@ using Baymax.Util;
 
 namespace Baymax.Model.Enum
 {
-    public class EnumErrorStatus : Enumeration
+    public class EnumErrorStatus : Enumeration<EnumErrorStatus>
     {
         /// <summary>
         /// 格式不正確
@@ -37,30 +37,9 @@ namespace Baymax.Model.Enum
         public static readonly EnumErrorStatus PERMISSION_DENIED
                 = new EnumErrorStatus(5, "You have no permission to operate");
 
-        private EnumErrorStatus()
-        {
-        }
-
         private EnumErrorStatus(int value, string displayName)
                 : base(value, displayName)
         {
-        }
-
-        public static IEnumerable<EnumErrorStatus> List()
-        {
-            return new[]
-                    { FORMAT_INVALID, DATA_NOT_FOUND, DATA_EXISTED, DATA_INVALID, PERMISSION_DENIED };
-        }
-
-        public static EnumErrorStatus FromString(string statusString)
-        {
-            return List()
-                    .FirstOrDefault(r => string.Equals(r.DisplayName, statusString, StringComparison.OrdinalIgnoreCase));
-        }
-
-        public static EnumErrorStatus FromValue(int value)
-        {
-            return List().FirstOrDefault(r => r.Value == value);
         }
     }
 }
