@@ -5,41 +5,37 @@ using System.Reflection;
 
 namespace Baymax.Util
 {
-    public abstract class Enumeration : IComparable
+    public abstract class Enumeration<T> : IComparable where T : Enumeration<T>
     {
-        protected Enumeration()
-        {
-        }
-
         protected Enumeration(int value, string displayName)
         {
             Value = value;
             DisplayName = displayName;
         }
 
-        public int Value { get; protected set; }
+        public int Value { get; }
 
-        public string DisplayName { get; protected set; }
+        public string DisplayName { get; }
 
-        protected static IEnumerable<T> GetAll<T>() where T : Enumeration, new()
+        public static IEnumerable<T> GetAll() 
         {
             return typeof(T).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
                             .Select(p => (T) p.GetValue(default(T)));
         }
 
-        protected static T FromValue<T>(int value) where T : Enumeration, new()
+        public static T FromValue(int value) 
         {
-            return Parse<T>(item => item.Value == value);
+            return Parse(item => item.Value == value);
         }
 
-        protected static T FromDisplayName<T>(string displayName) where T : Enumeration, new()
+        public static T FromDisplayName(string displayName) 
         {
-            return Parse<T>(item => string.Equals(item.DisplayName, displayName, StringComparison.OrdinalIgnoreCase));
+            return Parse(item => string.Equals(item.DisplayName, displayName, StringComparison.OrdinalIgnoreCase));
         }
-        
+
         public int CompareTo(object obj)
         {
-            return Value.CompareTo(((Enumeration) obj).Value);
+            return Value.CompareTo(((Enumeration<T>) obj).Value);
         }
 
         public override string ToString()
@@ -49,7 +45,7 @@ namespace Baymax.Util
 
         public override bool Equals(object obj)
         {
-            var otherValue = obj as Enumeration;
+            var otherValue = obj as Enumeration<T>;
 
             if (otherValue == null)
             {
@@ -67,9 +63,9 @@ namespace Baymax.Util
             return Value.GetHashCode();
         }
 
-        private static T Parse<T>(Func<T, bool> predicate) where T : Enumeration, new()
+        private static T Parse(Func<T, bool> predicate) 
         {
-            return GetAll<T>().FirstOrDefault(predicate);
+            return GetAll().FirstOrDefault(predicate);
         }
     }
 }

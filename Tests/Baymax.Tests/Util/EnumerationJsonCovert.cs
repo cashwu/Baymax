@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using Baymax.Extension;
+using Baymax.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -12,7 +14,7 @@ namespace Baymax.Tests.Util
         public EnumerationJsonCovert()
         {
         }
-        
+
         public EnumerationJsonCovert(params Type[] types)
         {
             _types = types;
@@ -31,17 +33,11 @@ namespace Baymax.Tests.Util
             }
 
             var jObject = JObject.Load(reader);
-            var propNames = jObject.Properties().Select(a => a.Name);
 
-            var obj = Activator.CreateInstance(objectType);
+            var paramTypes = new[] { typeof(int), typeof(string) };
+            var paramValues = new object[] { jObject["Value"].ToInt(), jObject["DisplayName"].ToString() };
 
-            foreach (var name in propNames)
-            {
-                var propertyInfo = objectType.GetProperty(name);
-                propertyInfo.SetValue(obj, Convert.ChangeType(jObject[name], propertyInfo.PropertyType));
-            }
-
-            return obj;
+            return Reflection.Construct(objectType, paramTypes, paramValues);
         }
 
         public override bool CanConvert(Type objectType)

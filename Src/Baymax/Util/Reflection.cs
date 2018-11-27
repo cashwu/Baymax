@@ -28,5 +28,17 @@ namespace Baymax.Util
                                              .Where(t => t.IsClass)
                                              .Where(typeCondition));
         }
+
+        public static object Construct(Type type, Type[] paramTypes, object[] paramValues)
+        {
+            var ci = type.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, paramTypes, null);
+
+            if (ci == null)
+            {
+                return null;
+            }
+
+            return ci.Invoke(paramValues);
+        }
     }
 }

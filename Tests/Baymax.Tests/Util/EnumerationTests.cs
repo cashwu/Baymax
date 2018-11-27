@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Baymax.Extension;
 using Baymax.Util;
 using ExpectedObjects;
 using FluentAssertions;
@@ -17,14 +16,6 @@ namespace Baymax.Tests.Util
             var e = EnumTest.A;
             e.Value.Should().Be(1);
             e.DisplayName.Should().Be("A");
-        }
-
-        [Fact]
-        public void Value_DisplayName_Default()
-        {
-            var e = new EnumTest();
-            e.Value.Should().Be(0);
-            e.DisplayName.Should().BeNull();
         }
 
         [Fact]
@@ -138,33 +129,14 @@ namespace Baymax.Tests.Util
         public EnumTest EnumTest { get; set; }
     }
 
-    public class EnumTest : Enumeration
+    public class EnumTest : Enumeration<EnumTest>
     {
         public static readonly EnumTest A = new EnumTest(1, "A");
         public static readonly EnumTest B = new EnumTest(2, "B");
 
-        public EnumTest()
-        {
-        }
-
         private EnumTest(int val, string name)
                 : base(val, name)
         {
-        }
-
-        public static IEnumerable<EnumTest> GetAll()
-        {
-            return GetAll<EnumTest>();
-        }
-
-        public static EnumTest FromValue(int value)
-        {
-            return FromValue<EnumTest>(value);
-        }
-
-        public static EnumTest FromDisplayName(string name)
-        {
-            return FromDisplayName<EnumTest>(name);
         }
     }
 }
